@@ -341,7 +341,8 @@ function isMyTask(p) {
     if (!currentUser) return false;
     const role = currentUser.role.toUpperCase();
     const uname = currentUser.username.toLowerCase();
-    if (p.Status === 'PENDING_PIC' && (role === 'PIC' || (p.PIC && p.PIC.toLowerCase() === uname))) return true;
+    // Only the SPECIFICALLY assigned PIC (Supervisor) can see this task
+    if (p.Status === 'PENDING_PIC' && p.PIC && p.PIC.toLowerCase() === uname) return true;
     if (p.Status === 'PENDING_EHS' && role === 'EHS') return true;
     if (p.Status === 'PENDING_PM' && role === 'PM') return true;
     return false;
@@ -384,7 +385,7 @@ async function initForm() {
     if (!allProjects.length) { const r = await api('getProjects'); if (r.success) allProjects = r.projects; }
     const ps = document.getElementById('fProject'); ps.innerHTML = '<option value="">Select Project...</option>' + allProjects.map(p => `<option value="${p.Code}">${p.Code} - ${p.Name}</option>`).join('');
     if (!allUsers.length) { const r = await api('getUsers'); if (r.success) allUsers = r.users; }
-    const pic = document.getElementById('fPIC'); pic.innerHTML = '<option value="">Select PIC...</option>' + allUsers.filter(u => u.Active !== 'NO').map(u => `<option value="${u.Username}">${u.Name}</option>`).join('');
+    const pic = document.getElementById('fPIC'); pic.innerHTML = '<option value="">Select Supervisor (PIC)...</option>' + allUsers.filter(u => u.Active !== 'NO' && u.Role.toUpperCase() === 'SUPERVISOR').map(u => `<option value="${u.Username}">${u.Name}</option>`).join('');
     document.getElementById('workersBody').innerHTML = ''; addWorkerRow();
     document.getElementById('fType').onchange = loadChecklist;
     refreshGPS();
@@ -468,7 +469,8 @@ async function loadPTWView(id) {
     let chks = []; try { chks = JSON.parse(p.Checklist || '[]'); } catch (e) { }
     const role = currentUser.role.toUpperCase(); const uname = currentUser.username.toLowerCase();
     let actions = `<button class="btn btn-sm btn-outline" onclick="printPTW('${p.ID}')">🖨️ PDF</button>`;
-    if (p.Status === 'PENDING_PIC' && (role === 'PIC' || (p.PIC && p.PIC.toLowerCase() === uname))) actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
+    // Lock approval to the assigned PIC only
+    if (p.Status === 'PENDING_PIC' && p.PIC && p.PIC.toLowerCase() === uname) actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
     else if (p.Status === 'PENDING_EHS' && role === 'EHS') actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
     else if (p.Status === 'PENDING_PM' && role === 'PM') actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
     else if (p.Status === 'ACTIVE' && (role === 'PM' || role === 'ADMIN')) actions += `<button class="btn btn-sm btn-danger" onclick="ptwPrompt('revokePTW','${p.ID}')">Revoke</button><button class="btn btn-sm btn-outline" onclick="ptwAct('closePTW','${p.ID}')">Close</button>`;
