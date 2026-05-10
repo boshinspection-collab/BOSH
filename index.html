@@ -127,6 +127,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 @media(max-width:768px){
 .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-content{margin-left:0}.hamburger{display:block}.topbar{padding:12px 16px}.page-content{padding:16px}.form-row{grid-template-columns:1fr}.chart-grid{grid-template-columns:1fr}.stat-cards{grid-template-columns:1fr 1fr}.detail-grid{grid-template-columns:1fr}}
 @media(max-width:480px){.stat-cards{grid-template-columns:1fr}.login-card{padding:32px 24px;margin:16px}}
+.expiring-soon-card { border-left: 4px solid var(--danger) !important; background: #fff5f5 !important; }
 </style>
 </head>
 <body>
@@ -195,8 +196,8 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 <div class="form-row"><div class="form-group"><label>Project *</label><select id="fProject"><option value="">Select Project...</option></select></div>
 <div class="form-group"><label>Permit Type *</label><select id="fType"><option value="">Select Type...</option><option>Hot Work</option><option>Confined Space</option><option>Electrical</option><option>Excavation</option><option>Working at Height</option><option>General</option></select></div></div>
 <div class="form-group"><label>Location / Area *</label><input id="fLocation" placeholder="e.g. Block A Level 3"></div>
-<div class="form-row"><div class="form-group"><label>Validity Start *</label><input id="fStart" type="date"></div>
-<div class="form-group"><label>Validity End *</label><input id="fEnd" type="date"></div></div>
+<div class="form-row"><div class="form-group"><label>Validity Start *</label><input id="fStart" type="datetime-local"></div>
+<div class="form-group"><label>Validity End *</label><input id="fEnd" type="datetime-local"></div></div>
 <div class="form-row"><div class="form-group"><label>Contact Number *</label><input id="fContact" type="tel" placeholder="+65"></div>
 <div class="form-group"><label>Assign PIC *</label><select id="fPIC"><option value="">Select PIC...</option></select></div></div>
 <div class="form-group"><label>Work Description *</label><textarea id="fDesc" rows="3" placeholder="Describe the work activity..."></textarea></div></div>
@@ -327,15 +328,21 @@ function updateStats() {
     const total = allPTWs.length;
     const myTasks = allPTWs.filter(p => isMyTask(p)).length;
     const pending = allPTWs.filter(p => p.Status && p.Status.startsWith('PENDING')).length;
-    const active = allPTWs.filter(p => p.Status === 'ACTIVE').length;
-    const closed = allPTWs.filter(p => p.Status === 'CLOSED').length;
+    const expiring = allPTWs.filter(p => p.Status === 'ACTIVE' && isExpiringSoon(p.ValidityEnd)).length;
     document.getElementById('companyLabel').textContent = currentUser.company || '';
     document.getElementById('statCards').innerHTML =
         `<div class="stat-card"><div class="number">${total}</div><div class="label">Total PTWs</div></div>` +
         `<div class="stat-card"><div class="number">⚡ ${myTasks}</div><div class="label">My Tasks</div></div>` +
+        `<div class="stat-card" style="${expiring > 0 ? 'border-bottom: 3px solid var(--danger)' : ''}"><div class="number" style="${expiring > 0 ? 'color: var(--danger)' : ''}">${expiring}</div><div class="label">Expiring Soon</div></div>` +
         `<div class="stat-card"><div class="number">${pending}</div><div class="label">Pending</div></div>` +
-        `<div class="stat-card"><div class="number">${active}</div><div class="label">Active</div></div>` +
-        `<div class="stat-card"><div class="number">${closed}</div><div class="label">Closed</div></div>`;
+        `<div class="stat-card"><div class="number">${active}</div><div class="label">Active</div></div>`;
+}
+function isExpiringSoon(endTime) {
+    if (!endTime) return false;
+    const end = new Date(endTime);
+    const now = new Date();
+    const diff = (end - now) / (1000 * 60 * 60); // Difference in hours
+    return diff > 0 && diff <= 2;
 }
 function isMyTask(p) {
     if (!currentUser) return false;
@@ -365,12 +372,15 @@ function renderPTWCards(cid) {
     const el = document.getElementById(cid);
     document.getElementById('taskTitle').textContent = `⚡ ${currentTab === 'mytasks' ? 'My Tasks' : 'PTW List'} (${list.length})`;
     if (!list.length) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">No permits found</div>'; return; }
-    el.innerHTML = list.map(p => `
-        <div class="ptw-card" onclick="navigate('ptwView','${p.ID}')">
-            <div><div class="ptw-id">${p.ID} <span class="badge badge-${statusClass(p.Status)}">${p.Status}</span></div>
+    el.innerHTML = list.map(p => {
+        const expiring = p.Status === 'ACTIVE' && isExpiringSoon(p.ValidityEnd);
+        return `
+        <div class="ptw-card ${expiring ? 'expiring-soon-card' : ''}" onclick="navigate('ptwView','${p.ID}')">
+            <div><div class="ptw-id">${p.ID} <span class="badge badge-${statusClass(p.Status)}">${p.Status}</span> ${expiring ? '<span class="badge badge-danger">⚠️ EXPIRING SOON</span>' : ''}</div>
             <div class="ptw-meta">${p.Type} · ${p.Location || ''} · ${formatDate(p.SubmittedAt)}</div></div>
             <div style="text-align:right;font-size:13px;color:var(--text-muted)">By: ${p.SubmittedBy || ''}<br><span style="color:var(--navy);font-weight:600">View →</span></div>
-        </div>`).join('');
+        </div>`;
+    }).join('');
 }
 function statusClass(s) { if (!s) return 'pending'; s = s.toUpperCase(); if (s === 'ACTIVE') return 'active'; if (s === 'CLOSED') return 'closed'; if (s === 'REJECTED') return 'rejected'; if (s === 'REVOKED') return 'revoked'; return 'pending'; }
 function formatDate(d) { if (!d) return ''; try { return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
@@ -428,9 +438,20 @@ async function loadChecklist() {
 function refreshGPS() {
     const el = document.getElementById('gpsStatus'); el.className = 'gps-status gps-loading'; el.textContent = '📍 Capturing GPS...';
     if (!navigator.geolocation) { el.className = 'gps-status gps-err'; el.textContent = 'GPS not supported'; return; }
-    navigator.geolocation.getCurrentPosition(p => {
-        gpsData = p.coords.latitude.toFixed(6) + ',' + p.coords.longitude.toFixed(6);
-        el.className = 'gps-status gps-ok'; el.textContent = '📍 GPS: ' + gpsData;
+    navigator.geolocation.getCurrentPosition(async p => {
+        const lat = p.coords.latitude.toFixed(6);
+        const lon = p.coords.longitude.toFixed(6);
+        gpsData = lat + ',' + lon;
+        el.className = 'gps-status gps-ok'; el.textContent = '📍 Capturing address...';
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+            const data = await res.json();
+            const addr = data.display_name || gpsData;
+            el.textContent = '📍 ' + addr;
+            // Optionally auto-fill location field if empty
+            const locField = document.getElementById('fLocation');
+            if (!locField.value) locField.value = data.address.road || data.address.suburb || '';
+        } catch(e) { el.textContent = '📍 GPS: ' + gpsData; }
     }, e => { el.className = 'gps-status gps-err'; el.textContent = 'GPS Error: ' + e.message; });
 }
 function openSignaturePad() {
