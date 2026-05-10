@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>BOSH CMS</title>
+<meta name="description" content="BOSH Construction Management System - Permit to Work Module">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--navy:#1E3A5F;--navy-dark:#0B1220;--yellow:#FBBF24;--bg:#F3F4F8;--white:#fff;--card-shadow:0 2px 12px rgba(0,0,0,.08);--radius:12px;--text:#1a1a2e;--text-muted:#6b7280;--success:#10b981;--danger:#ef4444;--warning:#f59e0b;--info:#3b82f6}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.login-bg{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#e8ecf4 0%,#c9d4e8 50%,#e8ecf4 100%)}
+.login-card{background:var(--white);border-radius:16px;padding:48px 40px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.1);text-align:center}
+.login-logo{width:64px;height:64px;margin-bottom:16px;background:var(--navy-dark);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-size:28px;color:var(--yellow)}
+.login-card h1{font-size:24px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.login-card p{color:var(--text-muted);font-size:13px;letter-spacing:2px;margin-bottom:32px}
+.form-group{text-align:left;margin-bottom:20px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;font-size:15px;font-family:inherit;transition:all .2s;background:var(--bg)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--yellow);box-shadow:0 0 0 3px rgba(251,191,36,.15)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border:none;border-radius:10px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s}
+.btn-primary{background:var(--navy);color:var(--white);width:100%}
+.btn-primary:hover{background:var(--navy-dark);transform:translateY(-1px)}
+.btn-yellow{background:var(--yellow);color:var(--navy);font-weight:700}
+.btn-yellow:hover{background:#f0b429;transform:translateY(-1px)}
+.btn-danger{background:var(--danger);color:var(--white)}
+.btn-success{background:var(--success);color:var(--white)}
+.btn-outline{background:transparent;border:2px solid #d1d5db;color:var(--text)}
+.btn-outline:hover{border-color:var(--navy);color:var(--navy)}
+.btn-sm{padding:8px 16px;font-size:13px;border-radius:8px}
+.btn-lg{padding:16px 32px;font-size:16px;min-height:52px}
+#loginError{color:var(--danger);font-size:13px;margin-top:8px;display:none}
+.app-layout{display:flex;min-height:100vh}
+.sidebar{width:260px;background:linear-gradient(180deg,var(--navy-dark) 0%,var(--navy) 100%);color:var(--white);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .3s}
+.sidebar-brand{padding:20px 24px;display:flex;align-items:center;gap:12px;font-size:18px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-brand span:first-child{color:var(--yellow)}
+.sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto}
+.nav-section{font-size:10px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:2px;padding:16px 12px 8px;text-transform:uppercase}
+.nav-link{display:flex;align-items:center;gap:12px;padding:11px 16px;border-radius:10px;color:rgba(255,255,255,.7);text-decoration:none;font-size:14px;font-weight:500;transition:all .15s;cursor:pointer;margin-bottom:2px}
+.nav-link:hover{background:rgba(255,255,255,.08);color:var(--white)}
+.nav-link.active{background:var(--yellow);color:var(--navy-dark);font-weight:600}
+.nav-link .icon{font-size:16px;width:20px;text-align:center}
+.sidebar-footer{padding:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px}
+.sidebar-footer .avatar{width:36px;height:36px;border-radius:50%;background:var(--yellow);color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.sidebar-footer .user-info{flex:1}
+.sidebar-footer .user-name{font-size:14px;font-weight:600}
+.sidebar-footer .user-role{font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase}
+.sidebar-footer .btn-logout{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer}
+.main-content{margin-left:260px;flex:1;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:var(--white);border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:50}
+.topbar h2{font-size:20px;font-weight:700;color:var(--navy)}
+.page-content{padding:24px 32px}
+.page{display:none}
+.page.active{display:block}
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--white);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--card-shadow);border-bottom:3px solid transparent;transition:transform .2s}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-card .number{font-size:32px;font-weight:700;color:var(--navy)}
+.stat-card .label{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.stat-card:nth-child(1){border-bottom-color:var(--info)}
+.stat-card:nth-child(2){border-bottom-color:var(--yellow)}
+.stat-card:nth-child(3){border-bottom-color:var(--warning)}
+.stat-card:nth-child(4){border-bottom-color:var(--success)}
+.stat-card:nth-child(5){border-bottom-color:var(--danger)}
+.tab-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.tab-btn{padding:8px 18px;border-radius:20px;border:2px solid #e5e7eb;background:var(--white);font-size:13px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all .2s;font-family:inherit}
+.tab-btn.active{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.ptw-list{display:flex;flex-direction:column;gap:12px}
+.ptw-card{background:var(--white);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--card-shadow);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .2s}
+.ptw-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.ptw-card .ptw-id{font-weight:700;font-size:16px;color:var(--navy)}
+.ptw-card .ptw-meta{font-size:13px;color:var(--text-muted);margin-top:4px}
+.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.badge-pending{background:#fef3c7;color:#92400e}
+.badge-active{background:#d1fae5;color:#065f46}
+.badge-closed{background:#e5e7eb;color:#374151}
+.badge-rejected{background:#fee2e2;color:#991b1b}
+.badge-revoked{background:#fce7f3;color:#9d174d}
+.form-card{background:var(--white);border-radius:var(--radius);padding:28px;box-shadow:var(--card-shadow);margin-bottom:20px}
+.form-card h3{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.form-card h3 .step-num{width:28px;height:28px;background:var(--navy);color:var(--white);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.workers-table{width:100%;border-collapse:collapse;margin:12px 0}
+.workers-table th{text-align:left;font-size:12px;font-weight:600;color:var(--text-muted);padding:8px 12px;border-bottom:2px solid #e5e7eb;text-transform:uppercase}
+.workers-table td{padding:8px 12px;border-bottom:1px solid #f3f4f6}
+.workers-table input{width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:6px;font-size:14px}
+.checklist-grid{display:flex;flex-direction:column;gap:12px}
+.checklist-item{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:12px 16px;background:var(--bg);border-radius:8px}
+.checklist-item .item-text{font-size:14px}
+.radio-group{display:flex;gap:12px}
+.radio-group label{display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer}
+.gps-status{padding:12px 16px;border-radius:8px;font-size:14px;margin:12px 0}
+.gps-ok{background:#d1fae5;color:#065f46}
+.gps-err{background:#fee2e2;color:#991b1b}
+.gps-loading{background:#fef3c7;color:#92400e}
+.approval-trail{display:flex;flex-direction:column;gap:0}
+.trail-step{display:flex;align-items:flex-start;gap:16px;padding:16px 0;position:relative}
+.trail-step:not(:last-child)::after{content:'';position:absolute;left:15px;top:48px;bottom:0;width:2px;background:#e5e7eb}
+.trail-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;z-index:1}
+.trail-dot.done{background:var(--success);color:var(--white)}
+.trail-dot.rejected{background:var(--danger);color:var(--white)}
+.trail-dot.pending{background:#e5e7eb;color:var(--text-muted)}
+.trail-dot.revoked{background:var(--warning);color:var(--white)}
+.trail-info .trail-title{font-weight:600;font-size:14px}
+.trail-info .trail-meta{font-size:12px;color:var(--text-muted);margin-top:2px}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.chart-card{background:var(--white);border-radius:var(--radius);padding:24px;box-shadow:var(--card-shadow)}
+.chart-card h3{font-size:16px;font-weight:600;margin-bottom:16px;color:var(--navy)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.detail-field label{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.detail-field p{font-size:15px;margin-top:4px}
+.hazard-stripe{height:8px;background:repeating-linear-gradient(135deg,var(--yellow),var(--yellow) 10px,var(--navy-dark) 10px,var(--navy-dark) 20px);border-radius:4px;margin:24px 0}
+.toast{position:fixed;top:20px;right:20px;padding:14px 24px;border-radius:10px;color:var(--white);font-weight:600;font-size:14px;z-index:9999;transform:translateX(120%);transition:transform .3s;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(0)}
+.toast-success{background:var(--success)}.toast-error{background:var(--danger)}.toast-info{background:var(--info)}
+.loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.8);display:none;align-items:center;justify-content:center;z-index:9998}
+.loading-overlay.show{display:flex}
+.spinner{width:40px;height:40px;border:4px solid #e5e7eb;border-top-color:var(--navy);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:9997}
+.modal-overlay.show{display:flex}
+.modal{background:var(--white);border-radius:16px;padding:32px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto}
+.modal h3{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:16px}
+.hamburger{display:none;background:none;border:none;font-size:24px;cursor:pointer;color:var(--navy);padding:8px}
+@media(max-width:768px){
+.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-content{margin-left:0}.hamburger{display:block}.topbar{padding:12px 16px}.page-content{padding:16px}.form-row{grid-template-columns:1fr}.chart-grid{grid-template-columns:1fr}.stat-cards{grid-template-columns:1fr 1fr}.detail-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.stat-cards{grid-template-columns:1fr}.login-card{padding:32px 24px;margin:16px}}
+</style>
+</head>
+<body>
+<div id="toast" class="toast"></div>
+<div id="loading" class="loading-overlay"><div class="spinner"></div></div>
+<div id="modal" class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal" id="modalContent"></div></div>
+
+<div id="loginPage" class="login-bg">
+<div class="login-card">
+<div class="login-logo">&#x1F3D7;&#xFE0F;</div>
+<h1>BOSH CMS</h1>
+<p>CONSTRUCTION MANAGEMENT SYSTEM</p>
+<div class="form-group"><label>USERNAME</label><input id="loginUser" placeholder="Enter username" autocomplete="username"></div>
+<div class="form-group"><label>PASSWORD</label><input id="loginPass" type="password" placeholder="Enter password" autocomplete="current-password"></div>
+<button class="btn btn-primary btn-lg" onclick="doLogin()">Sign In &rarr;</button>
+<div id="loginError"></div>
+</div></div>
+
+<div id="appLayout" class="app-layout" style="display:none">
+<nav class="sidebar" id="sidebar">
+<div class="sidebar-brand"><span>&#x1F3D7;&#xFE0F;</span> <span>BOSH</span> CMS</div>
+<div class="sidebar-nav">
+<div class="nav-section">OVERVIEW</div>
+<a class="nav-link active" onclick="navigate('dashboard')"><span class="icon">&#128202;</span> Dashboard</a>
+<div class="nav-section">HSE SAFETY</div>
+<a class="nav-link" onclick="navigate('ptwList')"><span class="icon">&#128203;</span> PTW</a>
+<a class="nav-link" onclick="navigate('tbm')"><span class="icon">&#128308;</span> Toolbox Meeting</a>
+<a class="nav-link" onclick="navigate('safety')"><span class="icon">&#128161;</span> Safety Inspection</a>
+<div class="nav-section">QUALITY</div>
+<a class="nav-link" onclick="navigate('qaqc')"><span class="icon">&#128309;</span> Quality Inspection</a>
+<a class="nav-link" onclick="navigate('defect')"><span class="icon">&#128295;</span> Defect Management</a>
+<div class="nav-section">ANALYTICS</div>
+<a class="nav-link" onclick="navigate('analytics')"><span class="icon">&#128200;</span> PTW Analytics</a>
+<div class="nav-section">SYSTEM</div>
+<a class="nav-link" onclick="navigate('admin')"><span class="icon">&#9881;&#65039;</span> Admin</a>
+</div>
+<div class="sidebar-footer">
+<div class="avatar" id="userAvatar">AD</div>
+<div class="user-info"><div class="user-name" id="userName">Admin</div><div class="user-role" id="userRole">ADMIN</div></div>
+<button class="btn-logout" onclick="doLogout()">Logout</button>
+</div></nav>
+
+<div class="main-content">
+<div class="topbar">
+<div style="display:flex;align-items:center;gap:12px">
+<button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
+<h2 id="pageTitle">Dashboard</h2></div>
+<div id="topbarActions"></div></div>
+<div class="page-content">
+
+<div id="pageDashboard" class="page active">
+<div id="companyLabel" style="color:var(--text-muted);margin-bottom:16px"></div>
+<div class="stat-cards" id="statCards"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+<h3 id="taskTitle">&#9889; My Tasks (0)</h3>
+<div><button class="btn btn-sm btn-primary" onclick="sortPTW('desc')">&darr; Newest</button> <button class="btn btn-sm btn-outline" onclick="sortPTW('asc')">&uarr; Oldest</button></div></div>
+<div class="tab-bar" id="dashTabs"></div>
+<div class="ptw-list" id="dashPtwList"></div></div>
+
+<div id="pagePtwList" class="page">
+<div class="tab-bar" id="listTabs"></div>
+<div class="ptw-list" id="ptwListCards"></div></div>
+
+<div id="pagePtwForm" class="page">
+<div class="form-card"><h3><span class="step-num">1</span> Permit Details</h3>
+<div class="form-row"><div class="form-group"><label>Project *</label><select id="fProject"><option value="">Select Project...</option></select></div>
+<div class="form-group"><label>Permit Type *</label><select id="fType"><option value="">Select Type...</option><option>Hot Work</option><option>Confined Space</option><option>Electrical</option><option>Excavation</option><option>Working at Height</option><option>General</option></select></div></div>
+<div class="form-group"><label>Location / Area *</label><input id="fLocation" placeholder="e.g. Block A Level 3"></div>
+<div class="form-row"><div class="form-group"><label>Validity Start *</label><input id="fStart" type="date"></div>
+<div class="form-group"><label>Validity End *</label><input id="fEnd" type="date"></div></div>
+<div class="form-row"><div class="form-group"><label>Contact Number *</label><input id="fContact" type="tel" placeholder="+65"></div>
+<div class="form-group"><label>Assign PIC *</label><select id="fPIC"><option value="">Select PIC...</option></select></div></div>
+<div class="form-group"><label>Work Description *</label><textarea id="fDesc" rows="3" placeholder="Describe the work activity..."></textarea></div></div>
+
+<div class="form-card"><h3><span class="step-num">2</span> Workers Involved *</h3>
+<table class="workers-table"><thead><tr><th>No.</th><th>Name</th><th>Designation</th><th></th></tr></thead><tbody id="workersBody"></tbody></table>
+<button class="btn btn-sm btn-outline" onclick="addWorkerRow()" style="margin-top:8px">+ Add Worker</button></div>
+
+<div class="form-card"><h3><span class="step-num">3</span> Equipment / Tools *</h3>
+<div class="form-group"><textarea id="fEquipment" rows="4" placeholder="List all equipment and tools..."></textarea></div></div>
+
+<div class="form-card"><h3><span class="step-num">4</span> <span id="checklistTitle">Safety Checklist</span></h3>
+<div style="background:#fef3c7;padding:10px 16px;border-radius:8px;color:#92400e;font-size:13px;margin-bottom:16px">&#9888; All checklist items must be completed before signing</div>
+<div id="checklistContainer"><p style="color:var(--text-muted);text-align:center">Select a Permit Type to load checklist...</p></div></div>
+
+<div class="form-card"><h3><span class="step-num">5</span> Supervisor Declaration &amp; Signature</h3>
+<div style="background:var(--bg);padding:16px;border-radius:8px;font-size:14px;color:var(--text);margin-bottom:16px;line-height:1.6">As Supervisor, I possess the required competence to oversee this activity. The Method Statement, Risk Assessment, and Safety Checklists are understood and complied with.</div>
+<div id="gpsStatus" class="gps-status gps-loading">&#128205; Capturing GPS location...</div>
+<div style="display:flex;gap:12px;margin:12px 0">
+<button class="btn btn-sm btn-outline" onclick="refreshGPS()">&#128205; Refresh GPS</button>
+<button class="btn btn-sm btn-yellow" onclick="openSignaturePad()">&#9997;&#65039; Sign Declaration</button></div>
+<div id="signaturePreview" style="display:none;margin-top:12px"><img id="sigPreviewImg" style="max-width:300px;border:1px solid #e5e7eb;border-radius:8px"></div></div>
+
+<div style="display:flex;gap:12px;justify-content:flex-end;margin-top:8px">
+<button class="btn btn-outline" onclick="navigate('dashboard')">Cancel</button>
+<button class="btn btn-yellow btn-lg" style="flex:1" onclick="submitPTW()">SUBMIT PTW &rarr;</button></div></div>
+
+<div id="pagePtwView" class="page"><div id="ptwViewContent"></div></div>
+
+<div id="pageAnalytics" class="page">
+<div class="chart-grid"><div class="chart-card"><h3>&#128202; PTW by Type</h3><canvas id="chartType"></canvas></div>
+<div class="chart-card"><h3>&#128202; PTW by Status</h3><canvas id="chartStatus"></canvas></div></div></div>
+
+<div id="pageTbm" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>&#128308; Toolbox Meeting</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
+<div id="pageSafety" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>&#128161; Safety Inspection</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
+<div id="pageQaqc" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>&#128309; Quality Inspection</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
+<div id="pageDefect" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>&#128295; Defect Management</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
+<div id="pageAdmin" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>&#9881;&#65039; Admin Panel</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
+
+</div></div></div>
+<script>
+// ============ CONFIG ============
+const API = 'https://script.google.com/macros/s/AKfycbwA3E0LKlzvLdq6aJbtQhGjDb_-Pb_m-NYqqIwfXJL0RIPmTH15xkvSNYhAHhYO2rk0Ow/exec';
+let currentUser = null, allPTWs = [], allUsers = [], allProjects = [], currentSort = 'desc', currentTab = 'mytasks', gpsData = '', signatureData = '', chartType = null, chartStatus = null;
+
+// ============ API ============
+async function api(action, params = {}) {
+    params.action = action;
+    try {
+        const r = await fetch(API, { method: 'POST', body: JSON.stringify(params), headers: { 'Content-Type': 'text/plain' } });
+        return await r.json();
+    } catch (e) { return { success: false, error: e.message }; }
+}
+
+// ============ UI UTILS ============
+function toast(msg, type = 'info') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast toast-' + type + ' show';
+    setTimeout(() => t.classList.remove('show'), 3500);
+}
+function showLoading() { document.getElementById('loading').classList.add('show'); }
+function hideLoading() { document.getElementById('loading').classList.remove('show'); }
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+
+// ============ AUTH ============
+async function doLogin() {
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value.trim();
+    const err = document.getElementById('loginError');
+    if (!u || !p) { err.textContent = 'Enter credentials'; err.style.display = 'block'; return; }
+    err.style.display = 'none'; showLoading();
+    const r = await api('login', { username: u, password: p });
+    hideLoading();
+    if (r.success) {
+        currentUser = r.user;
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('appLayout').style.display = 'flex';
+        document.getElementById('userName').textContent = currentUser.name || currentUser.username;
+        document.getElementById('userRole').textContent = currentUser.role;
+        document.getElementById('userAvatar').textContent = (currentUser.name || 'U').substring(0, 2).toUpperCase();
+        navigate('dashboard');
+    } else { err.textContent = r.error || 'Login failed'; err.style.display = 'block'; }
+}
+function doLogout() {
+    currentUser = null;
+    document.getElementById('appLayout').style.display = 'none';
+    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById('loginUser').value = '';
+    document.getElementById('loginPass').value = '';
+    allPTWs = [];
+}
+
+// ============ NAVIGATION ============
+const pageMap = { dashboard: 'pageDashboard', ptwList: 'pagePtwList', ptwForm: 'pagePtwForm', ptwView: 'pagePtwView', analytics: 'pageAnalytics', tbm: 'pageTbm', safety: 'pageSafety', qaqc: 'pageQaqc', defect: 'pageDefect', admin: 'pageAdmin' };
+const titleMap = { dashboard: 'Dashboard', ptwList: 'Permit to Work', ptwForm: 'New Permit To Work', ptwView: 'PTW Details', analytics: 'PTW Analytics', tbm: 'Toolbox Meeting', safety: 'Safety Inspection', qaqc: 'Quality Inspection', defect: 'Defect Management', admin: 'Admin' };
+
+function navigate(page, data) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+    const el = document.getElementById(pageMap[page]); if (el) el.classList.add('active');
+    document.getElementById('pageTitle').textContent = titleMap[page] || page;
+    const links = document.querySelectorAll('.nav-link');
+    const navIdx = { dashboard: 0, ptwList: 1, tbm: 2, safety: 3, qaqc: 4, defect: 5, analytics: 6, admin: 7 };
+    if (navIdx[page] !== undefined && links[navIdx[page]]) links[navIdx[page]].classList.add('active');
+    const acts = document.getElementById('topbarActions');
+    if (page === 'dashboard' || page === 'ptwList') acts.innerHTML = '<button class="btn btn-sm btn-yellow" onclick="navigate(\'ptwForm\')">+ NEW PTW</button>';
+    else acts.innerHTML = '';
+    if (page === 'dashboard') loadDashboard();
+    if (page === 'ptwList') loadPTWList();
+    if (page === 'ptwForm') initForm();
+    if (page === 'ptwView') loadPTWView(data);
+    if (page === 'analytics') loadAnalytics();
+    document.getElementById('sidebar').classList.remove('open');
+}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+// ============ DASHBOARD & LIST ============
+async function loadDashboard() {
+    showLoading(); const r = await api('getPTWList'); hideLoading();
+    if (!r.success) { toast(r.error, 'error'); return; }
+    allPTWs = r.ptws || [];
+    updateStats();
+    renderTabs('dashTabs');
+    renderPTWCards('dashPtwList');
+}
+function updateStats() {
+    const total = allPTWs.length;
+    const myTasks = allPTWs.filter(p => isMyTask(p)).length;
+    const pending = allPTWs.filter(p => p.Status && p.Status.startsWith('PENDING')).length;
+    const active = allPTWs.filter(p => p.Status === 'ACTIVE').length;
+    const closed = allPTWs.filter(p => p.Status === 'CLOSED').length;
+    document.getElementById('companyLabel').textContent = currentUser.company || '';
+    document.getElementById('statCards').innerHTML =
+        `<div class="stat-card"><div class="number">${total}</div><div class="label">Total PTWs</div></div>` +
+        `<div class="stat-card"><div class="number">⚡ ${myTasks}</div><div class="label">My Tasks</div></div>` +
+        `<div class="stat-card"><div class="number">${pending}</div><div class="label">Pending</div></div>` +
+        `<div class="stat-card"><div class="number">${active}</div><div class="label">Active</div></div>` +
+        `<div class="stat-card"><div class="number">${closed}</div><div class="label">Closed</div></div>`;
+}
+function isMyTask(p) {
+    if (!currentUser) return false;
+    const role = currentUser.role.toUpperCase();
+    const uname = currentUser.username.toLowerCase();
+    if (p.Status === 'PENDING_PIC' && (role === 'PIC' || (p.PIC && p.PIC.toLowerCase() === uname))) return true;
+    if (p.Status === 'PENDING_EHS' && role === 'EHS') return true;
+    if (p.Status === 'PENDING_PM' && role === 'PM') return true;
+    return false;
+}
+function renderTabs(cid) {
+    const tabs = ['mytasks', 'all', 'pending', 'active', 'closed', 'rejected'];
+    const labels = ['⚡ MY TASKS', 'ALL', 'PENDING', 'ACTIVE', 'CLOSED', 'REJECTED'];
+    let h = ''; const listId = cid === 'dashTabs' ? 'dashPtwList' : 'ptwListCards';
+    tabs.forEach((t, i) => { h += `<button class="tab-btn ${currentTab === t ? 'active' : ''}" onclick="currentTab='${t}';renderTabs('${cid}');renderPTWCards('${listId}')">${labels[i]}</button>`; });
+    document.getElementById(cid).innerHTML = h;
+}
+function renderPTWCards(cid) {
+    let list = [...allPTWs];
+    if (currentTab === 'mytasks') list = list.filter(p => isMyTask(p));
+    else if (currentTab === 'pending') list = list.filter(p => p.Status && p.Status.startsWith('PENDING'));
+    else if (currentTab === 'active') list = list.filter(p => p.Status === 'ACTIVE');
+    else if (currentTab === 'closed') list = list.filter(p => p.Status === 'CLOSED');
+    else if (currentTab === 'rejected') list = list.filter(p => p.Status === 'REJECTED');
+    list.sort((a, b) => { const da = new Date(a.SubmittedAt || 0), db = new Date(b.SubmittedAt || 0); return currentSort === 'desc' ? db - da : da - db; });
+    const el = document.getElementById(cid);
+    document.getElementById('taskTitle').textContent = `⚡ ${currentTab === 'mytasks' ? 'My Tasks' : 'PTW List'} (${list.length})`;
+    if (!list.length) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">No permits found</div>'; return; }
+    el.innerHTML = list.map(p => `
+        <div class="ptw-card" onclick="navigate('ptwView','${p.ID}')">
+            <div><div class="ptw-id">${p.ID} <span class="badge badge-${statusClass(p.Status)}">${p.Status}</span></div>
+            <div class="ptw-meta">${p.Type} · ${p.Location || ''} · ${formatDate(p.SubmittedAt)}</div></div>
+            <div style="text-align:right;font-size:13px;color:var(--text-muted)">By: ${p.SubmittedBy || ''}<br><span style="color:var(--navy);font-weight:600">View →</span></div>
+        </div>`).join('');
+}
+function statusClass(s) { if (!s) return 'pending'; s = s.toUpperCase(); if (s === 'ACTIVE') return 'active'; if (s === 'CLOSED') return 'closed'; if (s === 'REJECTED') return 'rejected'; if (s === 'REVOKED') return 'revoked'; return 'pending'; }
+function formatDate(d) { if (!d) return ''; try { return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
+async function loadPTWList() { if (!allPTWs.length) await loadDashboard(); else { renderTabs('listTabs'); renderPTWCards('ptwListCards'); } }
+function sortPTW(dir) { currentSort = dir; renderPTWCards(document.getElementById('pageDashboard').classList.contains('active') ? 'dashPtwList' : 'ptwListCards'); }
+
+// ============ FORM ============
+async function initForm() {
+    signatureData = ''; gpsData = ''; document.getElementById('signaturePreview').style.display = 'none';
+    ['fProject', 'fType', 'fLocation', 'fStart', 'fEnd', 'fContact', 'fPIC', 'fDesc', 'fEquipment'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('checklistContainer').innerHTML = '<p style="text-align:center;color:var(--text-muted)">Select a Permit Type...</p>';
+    if (!allProjects.length) { const r = await api('getProjects'); if (r.success) allProjects = r.projects; }
+    const ps = document.getElementById('fProject'); ps.innerHTML = '<option value="">Select Project...</option>' + allProjects.map(p => `<option value="${p.Code}">${p.Code} - ${p.Name}</option>`).join('');
+    if (!allUsers.length) { const r = await api('getUsers'); if (r.success) allUsers = r.users; }
+    const pic = document.getElementById('fPIC'); pic.innerHTML = '<option value="">Select PIC...</option>' + allUsers.filter(u => u.Active !== 'NO').map(u => `<option value="${u.Username}">${u.Name}</option>`).join('');
+    document.getElementById('workersBody').innerHTML = ''; addWorkerRow();
+    document.getElementById('fType').onchange = loadChecklist;
+    refreshGPS();
+}
+function addWorkerRow() {
+    const tr = document.createElement('tr'); const idx = document.getElementById('workersBody').children.length + 1;
+    tr.innerHTML = `<td>${idx}</td><td><input placeholder="Name"></td><td><input placeholder="Designation"></td><td><button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">✕</button></td>`;
+    document.getElementById('workersBody').appendChild(tr);
+}
+async function loadChecklist() {
+    const type = document.getElementById('fType').value; if (!type) return;
+    showLoading(); const r = await api('getChecklists', { type }); hideLoading();
+    const cont = document.getElementById('checklistContainer');
+    if (!r.success || !r.checklists.length) { cont.innerHTML = 'No checklist items'; return; }
+    cont.innerHTML = r.checklists.map((cl, gIdx) => `
+        <div style="font-weight:600;margin:10px 0;color:var(--navy)">${cl.name}</div>
+        ${cl.items.map((item, iIdx) => `
+            <div class="checklist-item">
+                <div class="item-text">${item}</div>
+                <div class="radio-group">
+                    <label><input type="radio" name="chk_${gIdx}_${iIdx}" value="Yes"> Yes</label>
+                    <label><input type="radio" name="chk_${gIdx}_${iIdx}" value="No"> No</label>
+                    <label><input type="radio" name="chk_${gIdx}_${iIdx}" value="NA"> N/A</label>
+                    <label><input type="radio" name="chk_${gIdx}_${iIdx}" value="Others" onchange="document.getElementById('oth_${gIdx}_${iIdx}').style.display=this.checked?'block':'none'"> Others</label>
+                </div>
+            </div>
+            <div id="oth_${gIdx}_${iIdx}" style="display:none;margin-bottom:10px"><input class="form-group" placeholder="Specify..."></div>
+        `).join('')}`).join('');
+}
+
+// ============ GPS & SIG ============
+function refreshGPS() {
+    const el = document.getElementById('gpsStatus'); el.className = 'gps-status gps-loading'; el.textContent = '📍 Capturing GPS...';
+    if (!navigator.geolocation) { el.className = 'gps-status gps-err'; el.textContent = 'GPS not supported'; return; }
+    navigator.geolocation.getCurrentPosition(p => {
+        gpsData = p.coords.latitude.toFixed(6) + ',' + p.coords.longitude.toFixed(6);
+        el.className = 'gps-status gps-ok'; el.textContent = '📍 GPS: ' + gpsData;
+    }, e => { el.className = 'gps-status gps-err'; el.textContent = 'GPS Error: ' + e.message; });
+}
+function openSignaturePad() {
+    document.getElementById('modalContent').innerHTML = `<h3>✍️ Signature</h3><canvas id="sigCanvas" width="400" height="200" style="border:1px solid #ccc;width:100%"></canvas><div style="display:flex;gap:10px;margin-top:10px"><button class="btn btn-outline btn-sm" onclick="clearSig()">Clear</button><button class="btn btn-yellow btn-sm" style="flex:1" onclick="saveSig()">Save</button></div>`;
+    document.getElementById('modal').classList.add('show'); initSig();
+}
+let sigCtx, drawing = false;
+function initSig() {
+    const c = document.getElementById('sigCanvas'); sigCtx = c.getContext('2d'); sigCtx.lineWidth = 2; sigCtx.lineCap = 'round';
+    const getP = (e) => { const r = c.getBoundingClientRect(); const t = e.touches ? e.touches[0] : e; return { x: (t.clientX - r.left) * (c.width / r.width), y: (t.clientY - r.top) * (c.height / r.height) }; };
+    c.onmousedown = c.ontouchstart = (e) => { e.preventDefault(); drawing = true; const p = getP(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); };
+    c.onmousemove = c.ontouchmove = (e) => { if (!drawing) return; e.preventDefault(); const p = getP(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); };
+    c.onmouseup = c.ontouchend = () => drawing = false;
+}
+function clearSig() { sigCtx.clearRect(0, 0, 400, 200); }
+function saveSig() {
+    signatureData = document.getElementById('sigCanvas').toDataURL('image/jpeg', 0.5);
+    document.getElementById('sigPreviewImg').src = signatureData; document.getElementById('signaturePreview').style.display = 'block'; closeModal();
+}
+
+// ============ SUBMIT ============
+async function submitPTW() {
+    const vals = { project: 'fProject', type: 'fType', location: 'fLocation', validityStart: 'fStart', validityEnd: 'fEnd', contactNumber: 'fContact', pic: 'fPIC', workDescription: 'fDesc', equipment: 'fEquipment' };
+    const p = {}; for (let k in vals) { p[k] = document.getElementById(vals[k]).value; if (!p[k]) return toast('Fill all fields', 'error'); }
+    if (!signatureData) return toast('Signature required', 'error');
+    const workers = []; document.querySelectorAll('#workersBody tr').forEach(tr => { const inp = tr.querySelectorAll('input'); if (inp[0].value) workers.push({ name: inp[0].value, designation: inp[1].value }); });
+    const checklist = []; document.querySelectorAll('.checklist-item').forEach((item, i) => {
+        const sel = item.querySelector('input:checked');
+        if (sel) {
+            let ans = sel.value; if (ans === 'Others') ans = 'Others: ' + item.nextElementSibling.querySelector('input').value;
+            checklist.push({ item: item.querySelector('.item-text').textContent, answer: ans });
+        }
+    });
+    showLoading(); const r = await api('submitPTW', { ...p, workers: JSON.stringify(workers), checklist: JSON.stringify(checklist), gps: gpsData, signature: signatureData, submittedBy: currentUser.username, company: currentUser.company });
+    hideLoading(); if (r.success) { toast('PTW Submitted: ' + r.id, 'success'); navigate('dashboard'); } else toast(r.error, 'error');
+}
+
+// ============ VIEW & ACTIONS ============
+async function loadPTWView(id) {
+    if (!id) return; showLoading(); const r = await api('getPTWDetail', { id }); hideLoading();
+    if (!r.success) return toast(r.error, 'error');
+    const p = r.ptw; let apps = []; try { apps = JSON.parse(p.Approvals || '[]'); } catch (e) { }
+    let workers = []; try { workers = JSON.parse(p.Workers || '[]'); } catch (e) { }
+    let chks = []; try { chks = JSON.parse(p.Checklist || '[]'); } catch (e) { }
+    const role = currentUser.role.toUpperCase(); const uname = currentUser.username.toLowerCase();
+    let actions = `<button class="btn btn-sm btn-outline" onclick="printPTW('${p.ID}')">🖨️ PDF</button>`;
+    if (p.Status === 'PENDING_PIC' && (role === 'PIC' || (p.PIC && p.PIC.toLowerCase() === uname))) actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
+    else if (p.Status === 'PENDING_EHS' && role === 'EHS') actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
+    else if (p.Status === 'PENDING_PM' && role === 'PM') actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
+    else if (p.Status === 'ACTIVE' && (role === 'PM' || role === 'ADMIN')) actions += `<button class="btn btn-sm btn-danger" onclick="ptwPrompt('revokePTW','${p.ID}')">Revoke</button><button class="btn btn-sm btn-outline" onclick="ptwAct('closePTW','${p.ID}')">Close</button>`;
+
+    document.getElementById('ptwViewContent').innerHTML = `
+        <div class="form-card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h2>${p.ID}</h2><span class="badge badge-${statusClass(p.Status)}">${p.Status}</span></div><div style="display:flex;gap:8px">${actions}</div></div></div>
+        <div class="form-card"><h3>Details</h3><div class="hazard-stripe"></div><div class="detail-grid"><div class="detail-field"><label>Project</label><p>${p.Project}</p></div><div class="detail-field"><label>Type</label><p>${p.Type}</p></div><div class="detail-field"><label>Location</label><p>${p.Location}</p></div><div class="detail-field"><label>PIC</label><p>${p.PIC}</p></div></div><p style="margin-top:10px"><b>Desc:</b> ${p.WorkDescription}</p></div>
+        <div class="form-card"><h3>Workers</h3>${workers.map(w => `<p>${w.name} (${w.designation})</p>`).join('')}</div>
+        <div class="form-card"><h3>Checklist</h3>${chks.map(c => `<p>${c.item}: <b>${c.answer}</b></p>`).join('')}</div>
+        <div class="form-card"><h3>Trail</h3><div class="approval-trail">${apps.map(a => `<div class="trail-step"><div class="trail-dot done">✓</div><div class="trail-info"><b>${a.role}: ${a.action}</b><br><small>${a.by} @ ${a.at}</small></div></div>`).join('')}</div></div>
+    `;
+}
+async function ptwAct(action, id) { if (!confirm('Confirm?')) return; showLoading(); const r = await api(action, { id, approvedBy: currentUser.username, closedBy: currentUser.username }); hideLoading(); if (r.success) loadDashboard().then(() => navigate('dashboard')); else toast(r.error, 'error'); }
+async function ptwPrompt(action, id) { const reason = prompt('Reason:'); if (!reason) return; showLoading(); const r = await api(action, { id, rejectedBy: currentUser.username, revokedBy: currentUser.username, role: currentUser.role, reason }); hideLoading(); if (r.success) loadDashboard().then(() => navigate('dashboard')); else toast(r.error, 'error'); }
+
+// ============ PDF ============
+async function printPTW(id) {
+    showLoading(); const r = await api('getPTWForPDF', { id }); hideLoading();
+    if (!r.success) return toast(r.error, 'error');
+    const p = r.ptw; let apps = []; try { apps = JSON.parse(p.Approvals || '[]'); } catch (e) { }
+    const w = window.open('', '_blank');
+    w.document.write(`<html><head><title>${p.ID}</title><style>body{font-family:sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;text-align:left}th{background:#eee}</style></head><body>
+        <h1>PTW: ${p.ID} (${p.Status})</h1><hr>
+        <p><b>Project:</b> ${p.Project} | <b>Type:</b> ${p.Type} | <b>Loc:</b> ${p.Location}</p>
+        <p><b>Desc:</b> ${p.WorkDescription}</p>
+        <h3>Approval Trail</h3><table><tr><th>Role</th><th>Action</th><th>By</th><th>Date</th></tr>${apps.map(a => `<tr><td>${a.role}</td><td>${a.action}</td><td>${a.by}</td><td>${a.at}</td></tr>`).join('')}</table>
+        <div style="margin-top:20px"><b>Signature:</b><br><img src="${p.SignatureURL}" style="max-width:300px"></div>
+        <script>setTimeout(()=>window.print(),500);</script>
+    </body></html>`);
+    w.document.close();
+}
+
+// ============ ANALYTICS ============
+async function loadAnalytics() {
+    showLoading(); const r = await api('getAnalytics'); hideLoading(); if (!r.success) return;
+    const a = r.analytics; const colors = ['#1E3A5F', '#FBBF24', '#10b981', '#ef4444', '#3b82f6'];
+    if (chartType) chartType.destroy(); if (chartStatus) chartStatus.destroy();
+    chartType = new Chart(document.getElementById('chartType'), { type: 'doughnut', data: { labels: Object.keys(a.byType), datasets: [{ data: Object.values(a.byType), backgroundColor: colors }] } });
+    chartStatus = new Chart(document.getElementById('chartStatus'), { type: 'doughnut', data: { labels: Object.keys(a.byStatus), datasets: [{ data: Object.values(a.byStatus), backgroundColor: colors }] } });
+}
+</script>
+</body>
+</html>
