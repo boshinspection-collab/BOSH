@@ -42,12 +42,12 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 .nav-link:hover{background:rgba(255,255,255,.08);color:var(--white)}
 .nav-link.active{background:var(--yellow);color:var(--navy-dark);font-weight:600}
 .nav-link .icon{font-size:16px;width:20px;text-align:center}
-.sidebar-footer{padding:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px}
+.sidebar-footer{padding:20px 16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px}
 .sidebar-footer .avatar{width:36px;height:36px;border-radius:50%;background:var(--yellow);color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
 .sidebar-footer .user-info{flex:1}
-.sidebar-footer .user-name{font-size:14px;font-weight:600}
-.sidebar-footer .user-role{font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase}
-.sidebar-footer .btn-logout{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer}
+.sidebar-footer .user-name{font-size:14px;font-weight:600;color:var(--white) !important}
+.sidebar-footer .user-role{font-size:11px;color:rgba(255,255,255,.6) !important;text-transform:uppercase}
+.sidebar-footer .btn-logout{background:rgba(255,255,255,.1);color:var(--white);border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer}
 .main-content{margin-left:260px;flex:1;min-height:100vh}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:var(--white);border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:50}
 .topbar h2{font-size:20px;font-weight:700;color:var(--navy)}
@@ -274,11 +274,18 @@ async function doLogin() {
     hideLoading();
     if (r.success) {
         currentUser = r.user;
+        // Normalize properties for compatibility
+        currentUser.role = currentUser.Role || currentUser.role;
+        currentUser.username = currentUser.Username || currentUser.username;
+        currentUser.name = currentUser.Name || currentUser.Name;
+
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('appLayout').style.display = 'flex';
-        document.getElementById('userName').textContent = currentUser.name || currentUser.username;
-        document.getElementById('userRole').textContent = currentUser.role;
-        document.getElementById('userAvatar').textContent = (currentUser.name || 'U').substring(0, 2).toUpperCase();
+        const displayName = currentUser.Name || currentUser.Username || 'User';
+        const displayRole = currentUser.Role || 'Role';
+        document.getElementById('userName').textContent = displayName;
+        document.getElementById('userRole').textContent = displayRole;
+        document.getElementById('userAvatar').textContent = displayName.substring(0, 2).toUpperCase();
         navigate('dashboard');
     } else { err.textContent = r.error || 'Login failed'; err.style.display = 'block'; }
 }
@@ -346,8 +353,8 @@ function isExpiringSoon(endTime) {
 }
 function isMyTask(p) {
     if (!currentUser) return false;
-    const role = currentUser.role.toUpperCase();
-    const uname = currentUser.username.toLowerCase();
+    const role = (currentUser.Role || currentUser.role || '').toUpperCase();
+    const uname = (currentUser.Username || currentUser.username || '').toLowerCase();
     // Only the SPECIFICALLY assigned PIC (Supervisor) can see this task
     if (p.Status === 'PENDING_PIC' && p.PIC && p.PIC.toLowerCase() === uname) return true;
     if (p.Status === 'PENDING_EHS' && role === 'EHS') return true;
@@ -491,29 +498,49 @@ async function submitPTW() {
 
 // ============ VIEW & ACTIONS ============
 async function loadPTWView(id) {
-    if (!id) return; showLoading(); const r = await api('getPTWDetail', { id }); hideLoading();
-    if (!r.success) return toast(r.error, 'error');
-    const p = r.ptw; let apps = []; try { apps = JSON.parse(p.Approvals || '[]'); } catch (e) { }
-    let workers = []; try { workers = JSON.parse(p.Workers || '[]'); } catch (e) { }
-    let chks = []; try { chks = JSON.parse(p.Checklist || '[]'); } catch (e) { }
-    const role = currentUser.role.toUpperCase(); const uname = currentUser.username.toLowerCase();
-    let actions = `<button class="btn btn-sm btn-outline" onclick="printPTW('${p.ID}')">🖨️ PDF</button>`;
-    // Lock approval to the assigned PIC only
-    if (p.Status === 'PENDING_PIC' && p.PIC && p.PIC.toLowerCase() === uname) actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
-    else if (p.Status === 'PENDING_EHS' && role === 'EHS') actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
-    else if (p.Status === 'PENDING_PM' && role === 'PM') actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
-    else if (p.Status === 'ACTIVE' && (role === 'PM' || role === 'ADMIN')) actions += `<button class="btn btn-sm btn-danger" onclick="ptwPrompt('revokePTW','${p.ID}')">Revoke</button><button class="btn btn-sm btn-outline" onclick="ptwAct('closePTW','${p.ID}')">Close</button>`;
+    if (!id) return; 
+    try {
+        showLoading(); 
+        const r = await api('getPTWDetail', { id }); 
+        hideLoading();
+        if (!r.success) return toast(r.error, 'error');
+        
+        const p = r.ptw; 
+        let apps = []; try { apps = JSON.parse(p.Approvals || '[]'); } catch (e) { }
+        let workers = []; try { workers = JSON.parse(p.Workers || '[]'); } catch (e) { }
+        let chks = []; try { chks = JSON.parse(p.Checklist || '[]'); } catch (e) { }
+        
+        const role = (currentUser.Role || currentUser.role || '').toUpperCase(); 
+        const uname = (currentUser.Username || currentUser.username || '').toLowerCase();
+        
+        let actions = `<button class="btn btn-sm btn-outline" onclick="printPTW('${p.ID}')">🖨️ PDF</button>`;
+        
+        // Lock approval to the assigned PIC only
+        if (p.Status === 'PENDING_PIC' && p.PIC && p.PIC.toLowerCase() === uname) {
+            actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
+        } else if (p.Status === 'PENDING_EHS' && role === 'EHS') {
+            actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
+        } else if (p.Status === 'PENDING_PM' && role === 'PM') {
+            actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
+        } else if (p.Status === 'ACTIVE' && (role === 'PM' || role === 'ADMIN')) {
+            actions += `<button class="btn btn-sm btn-danger" onclick="ptwPrompt('revokePTW','${p.ID}')">Revoke</button><button class="btn btn-sm btn-outline" onclick="ptwAct('closePTW','${p.ID}')">Close</button>`;
+        }
 
-    document.getElementById('ptwViewContent').innerHTML = `
-        <div class="form-card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h2>${p.ID}</h2><span class="badge badge-${statusClass(p.Status)}">${p.Status}</span></div><div style="display:flex;gap:8px">${actions}</div></div></div>
-        <div class="form-card"><h3>Details</h3><div class="hazard-stripe"></div><div class="detail-grid"><div class="detail-field"><label>Project</label><p>${p.Project}</p></div><div class="detail-field"><label>Type</label><p>${p.Type}</p></div><div class="detail-field"><label>Location</label><p>${p.Location}</p></div><div class="detail-field"><label>PIC</label><p>${p.PIC}</p></div></div><p style="margin-top:10px"><b>Desc:</b> ${p.WorkDescription}</p></div>
-        <div class="form-card"><h3>Workers</h3>${workers.map(w => `<p>${w.name} (${w.designation})</p>`).join('')}</div>
-        <div class="form-card"><h3>Checklist</h3>${chks.map(c => `<p>${c.item}: <b>${c.answer}</b></p>`).join('')}</div>
-        <div class="form-card"><h3>Trail</h3><div class="approval-trail">${apps.map(a => `<div class="trail-step"><div class="trail-dot done">✓</div><div class="trail-info"><b>${a.role}: ${a.action}</b><br><small>${a.by} @ ${a.at}</small></div></div>`).join('')}</div></div>
-    `;
+        document.getElementById('ptwViewContent').innerHTML = `
+            <div class="form-card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h2>${p.ID}</h2><span class="badge badge-${statusClass(p.Status)}">${p.Status}</span></div><div style="display:flex;gap:8px">${actions}</div></div></div>
+            <div class="form-card"><h3>Details</h3><div class="hazard-stripe"></div><div class="detail-grid"><div class="detail-field"><label>Project</label><p>${p.Project}</p></div><div class="detail-field"><label>Type</label><p>${p.Type}</p></div><div class="detail-field"><label>Location</label><p>${p.Location}</p></div><div class="detail-field"><label>PIC</label><p>${p.PIC}</p></div></div><p style="margin-top:10px"><b>Desc:</b> ${p.WorkDescription}</p></div>
+            <div class="form-card"><h3>Workers</h3>${workers.map(w => `<p>${w.name} (${w.designation})</p>`).join('')}</div>
+            <div class="form-card"><h3>Checklist</h3>${chks.map(c => `<p>${c.item}: <b>${c.answer}</b></p>`).join('')}</div>
+            <div class="form-card"><h3>Trail</h3><div class="approval-trail">${apps.map(a => `<div class="trail-step"><div class="trail-dot done">✓</div><div class="trail-info"><b>${a.role}: ${a.action}</b><br><small>${a.by} @ ${a.at}</small></div></div>`).join('')}</div></div>
+        `;
+    } catch (err) {
+        hideLoading();
+        toast('Error loading PTW: ' + err.toString(), 'error');
+        console.error(err);
+    }
 }
-async function ptwAct(action, id) { if (!confirm('Confirm?')) return; showLoading(); const r = await api(action, { id, approvedBy: currentUser.username, closedBy: currentUser.username }); hideLoading(); if (r.success) loadDashboard().then(() => navigate('dashboard')); else toast(r.error, 'error'); }
-async function ptwPrompt(action, id) { const reason = prompt('Reason:'); if (!reason) return; showLoading(); const r = await api(action, { id, rejectedBy: currentUser.username, revokedBy: currentUser.username, role: currentUser.role, reason }); hideLoading(); if (r.success) loadDashboard().then(() => navigate('dashboard')); else toast(r.error, 'error'); }
+async function ptwAct(action, id) { if (!confirm('Confirm?')) return; showLoading(); const r = await api(action, { id, approvedBy: (currentUser.Username || currentUser.username), closedBy: (currentUser.Username || currentUser.username) }); hideLoading(); if (r.success) loadDashboard().then(() => navigate('dashboard')); else toast(r.error, 'error'); }
+async function ptwPrompt(action, id) { const reason = prompt('Reason:'); if (!reason) return; showLoading(); const r = await api(action, { id, rejectedBy: (currentUser.Username || currentUser.username), revokedBy: (currentUser.Username || currentUser.username), role: (currentUser.Role || currentUser.role), reason }); hideLoading(); if (r.success) loadDashboard().then(() => navigate('dashboard')); else toast(r.error, 'error'); }
 
 // ============ PDF ============
 async function printPTW(id) {
