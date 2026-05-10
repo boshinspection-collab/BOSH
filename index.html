@@ -336,6 +336,7 @@ function updateStats() {
     const myTasks = allPTWs.filter(p => isMyTask(p)).length;
     const pending = allPTWs.filter(p => p.Status && p.Status.startsWith('PENDING')).length;
     const expiring = allPTWs.filter(p => p.Status === 'ACTIVE' && isExpiringSoon(p.ValidityEnd)).length;
+    const active = allPTWs.filter(p => p.Status === 'ACTIVE').length;
     document.getElementById('companyLabel').textContent = currentUser.company || '';
     document.getElementById('statCards').innerHTML =
         `<div class="stat-card"><div class="number">${total}</div><div class="label">Total PTWs</div></div>` +
@@ -544,7 +545,7 @@ async function ptwPrompt(action, id) { const reason = prompt('Reason:'); if (!re
 
 // ============ PDF ============
 async function printPTW(id) {
-    showLoading(); const r = await api('getPTWForPDF', { id }); hideLoading();
+    showLoading(); const r = await api('getPTWDetail', { id }); hideLoading();
     if (!r.success) return toast(r.error, 'error');
     const p = r.ptw; let apps = []; try { apps = JSON.parse(p.Approvals || '[]'); } catch (e) { }
     const w = window.open('', '_blank');
