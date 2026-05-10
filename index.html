@@ -386,6 +386,14 @@ async function initForm() {
     const ps = document.getElementById('fProject'); ps.innerHTML = '<option value="">Select Project...</option>' + allProjects.map(p => `<option value="${p.Code}">${p.Code} - ${p.Name}</option>`).join('');
     if (!allUsers.length) { const r = await api('getUsers'); if (r.success) allUsers = r.users; }
     const pic = document.getElementById('fPIC'); pic.innerHTML = '<option value="">Select Supervisor (PIC)...</option>' + allUsers.filter(u => u.Active !== 'NO' && u.Role.toUpperCase() === 'SUPERVISOR').map(u => `<option value="${u.Username}">${u.Name}</option>`).join('');
+    
+    // Dynamically load Permit Types from Checklist tab
+    showLoading(); const cr = await api('getChecklistTypes'); hideLoading();
+    if (cr.success) {
+        const ts = document.getElementById('fType');
+        ts.innerHTML = '<option value="">Select Type...</option>' + cr.types.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+    }
+    
     document.getElementById('workersBody').innerHTML = ''; addWorkerRow();
     document.getElementById('fType').onchange = loadChecklist;
     refreshGPS();
