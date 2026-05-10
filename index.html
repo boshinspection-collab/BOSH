@@ -310,12 +310,25 @@ function navigate(page, data) {
     const links = document.querySelectorAll('.nav-link');
     const navIdx = { dashboard: 0, ptwList: 1, tbm: 2, safety: 3, qaqc: 4, defect: 5, analytics: 6, admin: 7 };
     if (navIdx[page] !== undefined && links[navIdx[page]]) links[navIdx[page]].classList.add('active');
-    const acts = document.getElementById('topbarActions');
-    if (page === 'dashboard' || page === 'ptwList') acts.innerHTML = '<button class="btn btn-sm btn-yellow" onclick="navigate(\'ptwForm\')">+ NEW PTW</button>';
-    else acts.innerHTML = '';
+    const role = (currentUser.Role || '').toUpperCase();
+    if (page === 'dashboard' || page === 'ptwList') {
+        if (role === 'SUPERVISOR' || role === 'ADMIN') {
+            acts.innerHTML = '<button class="btn btn-sm btn-yellow" onclick="navigate(\'ptwForm\')">+ NEW PTW</button>';
+        } else {
+            acts.innerHTML = '';
+        }
+    } else acts.innerHTML = '';
     if (page === 'dashboard') loadDashboard();
     if (page === 'ptwList') loadPTWList();
-    if (page === 'ptwForm') initForm();
+    if (page === 'ptwForm') {
+        const role = (currentUser.Role || '').toUpperCase();
+        if (role !== 'SUPERVISOR' && role !== 'ADMIN') {
+            toast('Access Denied: Only Supervisors can apply for PTW', 'error');
+            navigate('dashboard');
+            return;
+        }
+        initForm();
+    }
     if (page === 'ptwView') loadPTWView(data);
     if (page === 'analytics') loadAnalytics();
     document.getElementById('sidebar').classList.remove('open');
@@ -516,12 +529,14 @@ async function loadPTWView(id) {
         
         let actions = `<button class="btn btn-sm btn-outline" onclick="printPTW('${p.ID}')">🖨️ PDF</button>`;
         
-        // Lock approval to the assigned PIC only
-        if (p.Status === 'PENDING_PIC' && p.PIC && p.PIC.toLowerCase() === uname) {
+        // Allow assigned PIC OR Admin to approve
+        const canApprove = (p.PIC && p.PIC.toLowerCase() === uname) || role === 'ADMIN';
+
+        if (p.Status === 'PENDING_PIC' && canApprove) {
             actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
-        } else if (p.Status === 'PENDING_EHS' && role === 'EHS') {
+        } else if (p.Status === 'PENDING_EHS' && (role === 'EHS' || role === 'ADMIN')) {
             actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
-        } else if (p.Status === 'PENDING_PM' && role === 'PM') {
+        } else if (p.Status === 'PENDING_PM' && (role === 'PM' || role === 'ADMIN')) {
             actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
         } else if (p.Status === 'ACTIVE' && (role === 'PM' || role === 'ADMIN')) {
             actions += `<button class="btn btn-sm btn-danger" onclick="ptwPrompt('revokePTW','${p.ID}')">Revoke</button><button class="btn btn-sm btn-outline" onclick="ptwAct('closePTW','${p.ID}')">Close</button>`;
@@ -547,16 +562,89 @@ async function ptwPrompt(action, id) { const reason = prompt('Reason:'); if (!re
 async function printPTW(id) {
     showLoading(); const r = await api('getPTWDetail', { id }); hideLoading();
     if (!r.success) return toast(r.error, 'error');
-    const p = r.ptw; let apps = []; try { apps = JSON.parse(p.Approvals || '[]'); } catch (e) { }
+    const p = r.ptw; 
+    let apps = []; try { apps = JSON.parse(p.Approvals || '[]'); } catch (e) { }
+    let workers = []; try { workers = JSON.parse(p.Workers || '[]'); } catch (e) { }
+    let chks = []; try { chks = JSON.parse(p.Checklist || '[]'); } catch (e) { }
+
     const w = window.open('', '_blank');
-    w.document.write(`<html><head><title>${p.ID}</title><style>body{font-family:sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;text-align:left}th{background:#eee}</style></head><body>
-        <h1>PTW: ${p.ID} (${p.Status})</h1><hr>
-        <p><b>Project:</b> ${p.Project} | <b>Type:</b> ${p.Type} | <b>Loc:</b> ${p.Location}</p>
-        <p><b>Desc:</b> ${p.WorkDescription}</p>
-        <h3>Approval Trail</h3><table><tr><th>Role</th><th>Action</th><th>By</th><th>Date</th></tr>${apps.map(a => `<tr><td>${a.role}</td><td>${a.action}</td><td>${a.by}</td><td>${a.at}</td></tr>`).join('')}</table>
-        <div style="margin-top:20px"><b>Signature:</b><br><img src="${p.SignatureURL}" style="max-width:300px"></div>
-        <scr' + 'ipt>setTimeout(()=>window.print(),500);</scr' + 'ipt>
-    </bo' + 'dy></ht' + 'ml>`);
+    w.document.write(`
+    <html><head><title>${p.ID}</title>
+    <style>
+        body{font-family: Arial, sans-serif; padding: 40px; color: #333; line-height: 1.6;}
+        .header{text-align: center; border-bottom: 3px solid #1E3A5F; padding-bottom: 10px; margin-bottom: 20px;}
+        .header h1{margin: 0; color: #1E3A5F; font-size: 28px;}
+        .header p{margin: 5px 0; font-weight: bold; color: #666;}
+        .section-title{background: #f4f4f4; padding: 8px 12px; font-weight: bold; border-left: 5px solid #1E3A5F; margin: 20px 0 10px; text-transform: uppercase; font-size: 14px;}
+        table{width: 100%; border-collapse: collapse; margin-bottom: 15px;}
+        th, td{border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 13px;}
+        th{background: #fafafa; font-weight: bold; width: 30%;}
+        .chk-table td{width: 50%;}
+        .signature-grid{display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px;}
+        .sig-box{border: 1px solid #ddd; padding: 15px; text-align: center; border-radius: 8px;}
+        .sig-img{max-height: 80px; margin-bottom: 10px;}
+        .footer{margin-top: 40px; font-size: 11px; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 10px;}
+    </style>
+    </head><body>
+        <div class="header">
+            <h1>PERMIT TO WORK</h1>
+            <p>${p.Company || 'BOSH CONSTRUCTION'}</p>
+        </div>
+        
+        <table style="margin-bottom: 0;">
+            <tr><th>Permit ID</th><td><b>${p.ID}</b></td><th>Current Status</th><td>${p.Status}</td></tr>
+            <tr><th>Project</th><td>${p.Project}</td><th>Permit Type</th><td>${p.Type}</td></tr>
+            <tr><th>Validity Start</th><td>${p.ValidityStart}</td><th>Validity End</th><td>${p.ValidityEnd}</td></tr>
+        </table>
+
+        <div class="section-title">Work Details</div>
+        <table>
+            <tr><th>Location / Area</th><td>${p.Location}</td></tr>
+            <tr><th>Contact Number</th><td>${p.ContactNumber}</td></tr>
+            <tr><th>Supervisor (PIC)</th><td>${p.PIC}</td></tr>
+            <tr><th>Work Description</th><td>${p.WorkDescription}</td></tr>
+            <tr><th>Equipment Used</th><td>${p.Equipment}</td></tr>
+        </table>
+
+        <div class="section-title">Checklist Compliance</div>
+        <table class="chk-table">
+            ${chks.map(c => `<tr><td>${c.item}</td><td><b>${c.answer}</b></td></tr>`).join('')}
+        </table>
+
+        <div class="section-title">Workers Involved</div>
+        <table>
+            <tr><th>Name</th><th>Designation</th></tr>
+            ${workers.map(w => `<tr><td>${w.name}</td><td>${w.designation}</td></tr>`).join('')}
+        </table>
+
+        <div class="section-title">Approval & Authorization</div>
+        <table>
+            <tr><th>Role</th><th>Action</th><th>By</th><th>Date/Time</th></tr>
+            ${apps.length ? apps.map(a => `<tr><td>${a.role}</td><td>${a.action}</td><td>${a.by}</td><td>${a.at}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center">No approvals recorded yet</td></tr>'}
+        </table>
+
+        <div class="signature-grid">
+            <div class="sig-box">
+                <p><b>Applicant Signature</b></p>
+                <img src="${p.SignatureURL}" class="sig-img"><br>
+                <small>${p.SubmittedBy}<br>${p.SubmittedAt}</small>
+            </div>
+            <div class="sig-box">
+                <p><b>GPS Verification</b></p>
+                <div style="font-size: 12px; margin-top: 20px;">
+                    Coordinates: ${p.GPS}<br>
+                    Location verified at submission
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            This is a computer-generated document. No physical signature required where digital authorization is present.
+        </div>
+
+        <script>setTimeout(()=>window.print(), 800);</script>
+    </body></html>
+    `);
     w.document.close();
 }
 
