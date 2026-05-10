@@ -277,17 +277,21 @@ async function doLogin() {
         // Normalize properties for compatibility
         currentUser.role = currentUser.Role || currentUser.role;
         currentUser.username = currentUser.Username || currentUser.username;
-        currentUser.name = currentUser.Name || currentUser.Name;
+        currentUser.name = currentUser.Name || currentUser.username || 'User';
 
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('appLayout').style.display = 'flex';
-        const displayName = currentUser.Name || currentUser.Username || 'User';
-        const displayRole = currentUser.Role || 'Role';
+        const displayName = currentUser.name;
+        const displayRole = currentUser.role || 'Role';
         document.getElementById('userName').textContent = displayName;
         document.getElementById('userRole').textContent = displayRole;
         document.getElementById('userAvatar').textContent = displayName.substring(0, 2).toUpperCase();
         navigate('dashboard');
-    } else { err.textContent = r.error || 'Login failed'; err.style.display = 'block'; }
+    } else { 
+        err.textContent = r.error || 'Invalid credentials. Please try again.'; 
+        err.style.display = 'block'; 
+        toast(r.error || 'Login failed', 'error');
+    }
 }
 function doLogout() {
     currentUser = null;
