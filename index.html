@@ -278,6 +278,7 @@ async function doLogin() {
         currentUser.role = currentUser.Role || currentUser.role;
         currentUser.username = currentUser.Username || currentUser.username;
         currentUser.name = currentUser.Name || currentUser.username || 'User';
+        currentUser.company = currentUser.Company || currentUser.company || '';
 
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('appLayout').style.display = 'flex';
@@ -307,6 +308,7 @@ const pageMap = { dashboard: 'pageDashboard', ptwList: 'pagePtwList', ptwForm: '
 const titleMap = { dashboard: 'Dashboard', ptwList: 'Permit to Work', ptwForm: 'New Permit To Work', ptwView: 'PTW Details', analytics: 'PTW Analytics', tbm: 'Toolbox Meeting', safety: 'Safety Inspection', qaqc: 'Quality Inspection', defect: 'Defect Management', admin: 'Admin' };
 
 function navigate(page, data) {
+    const acts = document.getElementById('topbarActions');
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
     const el = document.getElementById(pageMap[page]); if (el) el.classList.add('active');
@@ -314,18 +316,20 @@ function navigate(page, data) {
     const links = document.querySelectorAll('.nav-link');
     const navIdx = { dashboard: 0, ptwList: 1, tbm: 2, safety: 3, qaqc: 4, defect: 5, analytics: 6, admin: 7 };
     if (navIdx[page] !== undefined && links[navIdx[page]]) links[navIdx[page]].classList.add('active');
-    const role = (currentUser.Role || '').toUpperCase();
+    
+    const role = (currentUser.role || currentUser.Role || '').toUpperCase();
     if (page === 'dashboard' || page === 'ptwList') {
         if (role === 'SUPERVISOR' || role === 'ADMIN') {
             acts.innerHTML = '<button class="btn btn-sm btn-yellow" onclick="navigate(\'ptwForm\')">+ NEW PTW</button>';
         } else {
             acts.innerHTML = '';
         }
-    } else acts.innerHTML = '';
+    } else if (acts) acts.innerHTML = '';
+
     if (page === 'dashboard') loadDashboard();
     if (page === 'ptwList') loadPTWList();
     if (page === 'ptwForm') {
-        const role = (currentUser.Role || '').toUpperCase();
+        const role = (currentUser.role || currentUser.Role || '').toUpperCase();
         if (role !== 'SUPERVISOR' && role !== 'ADMIN') {
             toast('Access Denied: Only Supervisors can apply for PTW', 'error');
             navigate('dashboard');
