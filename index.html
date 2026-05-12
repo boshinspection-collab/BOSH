@@ -424,7 +424,7 @@ async function initForm() {
     if (!allProjects.length) { const r = await api('getProjects'); if (r.success) allProjects = r.projects; }
     const ps = document.getElementById('fProject'); ps.innerHTML = '<option value="">Select Project...</option>' + allProjects.map(p => `<option value="${p.Code}">${p.Code} - ${p.Name}</option>`).join('');
     if (!allUsers.length) { const r = await api('getUsers'); if (r.success) allUsers = r.users; }
-    const pic = document.getElementById('fPIC'); pic.innerHTML = '<option value="">Select Supervisor (PIC)...</option>' + allUsers.filter(u => u.Active !== 'NO' && u.Role.toUpperCase() === 'SUPERVISOR').map(u => `<option value="${u.Username}">${u.Name}</option>`).join('');
+    const pic = document.getElementById('fPIC'); pic.innerHTML = '<option value="">Select PIC...</option>' + allUsers.filter(u => u.Active !== 'NO' && (u.Role.toUpperCase() === 'PIC' || u.Role.toUpperCase() === 'SUPERVISOR')).map(u => `<option value="${u.Username}">${u.Name}</option>`).join('');
     
     // Dynamically load Permit Types from Checklist tab
     showLoading(); const cr = await api('getChecklistTypes'); hideLoading();
