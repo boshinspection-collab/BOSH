@@ -89,12 +89,28 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 .checklist-grid{display:flex;flex-direction:column;gap:12px}
 .checklist-item{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:12px 16px;background:var(--bg);border-radius:8px}
 .checklist-item .item-text{font-size:14px}
-.radio-group{display:flex;gap:12px}
-.radio-group label{display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer}
+.radio-group{display:flex;gap:6px;background:#eef1f6;padding:6px;border-radius:12px;width:fit-content;border:1px solid #e2e8f0}
+.radio-group label{display:flex;align-items:center;justify-content:center;padding:8px 14px;font-size:11px;font-weight:700;color:var(--text-muted);cursor:pointer;border-radius:8px;transition:all .2s;user-select:none;min-width:65px;background:var(--white);border:1px solid transparent;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.radio-group input{display:none}
+.radio-group label:hover{background:#f8fafc;border-color:#cbd5e1;color:var(--navy)}
+.radio-group label:has(input:checked){color:var(--white);box-shadow:0 4px 12px rgba(0,0,0,.15);transform:translateY(-1px);border-color:rgba(255,255,255,.2)}
+.radio-group label:has(input[value="Yes"]:checked){background:var(--success)}
+.radio-group label:has(input[value="No"]:checked){background:var(--danger)}
+.radio-group label:has(input[value="NA"]:checked){background:var(--info)}
+.radio-group label:has(input[value="Others"]:checked){background:var(--warning)}
 .gps-status{padding:12px 16px;border-radius:8px;font-size:14px;margin:12px 0}
-.gps-ok{background:#d1fae5;color:#065f46}
-.gps-err{background:#fee2e2;color:#991b1b}
+.gps-ok { background: #ecfdf5; color: #059669; border: 1px solid #10b981; }
+.gps-err { background: #fef2f2; color: #dc2626; border: 1px solid #ef4444; }
 .gps-loading{background:#fef3c7;color:#92400e}
+/* Report Styles (Professional Sample) */
+.report-container { background: #fff; padding: 30px; border-radius: 4px; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+.report-table { width: 100%; border-collapse: collapse; margin-bottom: 0px; font-size: 12px; }
+.report-table td { border: 1px solid #ddd; padding: 8px 12px; vertical-align: top; }
+.report-table .lbl { background: #f8fafc; font-weight: 700; color: var(--navy); width: 25%; }
+.report-table .val { background: #fff; }
+.section-title { background: var(--navy); color: #fff; padding: 8px 12px; font-size: 14px; font-weight: 700; margin-top: 20px; border-radius: 2px 2px 0 0; }
+.report-table + .report-table { margin-top: -1px; }
+
 .approval-trail{display:flex;flex-direction:column;gap:0}
 .trail-step{display:flex;align-items:flex-start;gap:16px;padding:16px 0;position:relative}
 .trail-step:not(:last-child)::after{content:'';position:absolute;left:15px;top:48px;bottom:0;width:2px;background:#e5e7eb}
@@ -105,9 +121,10 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 .trail-dot.revoked{background:var(--warning);color:var(--white)}
 .trail-info .trail-title{font-weight:600;font-size:14px}
 .trail-info .trail-meta{font-size:12px;color:var(--text-muted);margin-top:2px}
-.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.chart-card{background:var(--white);border-radius:var(--radius);padding:24px;box-shadow:var(--card-shadow)}
-.chart-card h3{font-size:16px;font-weight:600;margin-bottom:16px;color:var(--navy)}
+.chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.chart-card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--card-shadow); text-align: center; }
+.chart-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--navy); border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.chart-card canvas { max-height: 250px !important; width: 100% !important; }
 .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .detail-field label{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
 .detail-field p{font-size:15px;margin-top:4px}
@@ -127,7 +144,10 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 @media(max-width:768px){
 .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-content{margin-left:0}.hamburger{display:block}.topbar{padding:12px 16px}.page-content{padding:16px}.form-row{grid-template-columns:1fr}.chart-grid{grid-template-columns:1fr}.stat-cards{grid-template-columns:1fr 1fr}.detail-grid{grid-template-columns:1fr}}
 @media(max-width:480px){.stat-cards{grid-template-columns:1fr}.login-card{padding:32px 24px;margin:16px}}
-.expiring-soon-card { border-left: 4px solid var(--danger) !important; background: #fff5f5 !important; }
+.expiring-soon-card { border-left: 5px solid #f59e0b !important; background: #fffcf0 !important; }
+.expired-card { border-left: 5px solid var(--danger) !important; background: #fff5f5 !important; }
+.badge-warning { background: #f59e0b; color: #fff; }
+.badge-danger { background: var(--danger); color: #fff; }
 </style>
 </head>
 <body>
@@ -138,7 +158,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 <div id="loginPage" class="login-bg">
 <div class="login-card">
 <div class="login-logo">&#x1F3D7;&#xFE0F;</div>
-<h1>BOSH CMS</h1>
+<h1 style="cursor:pointer" onclick="checkServer()">BOSH CMS</h1>
 <p>CONSTRUCTION MANAGEMENT SYSTEM</p>
 <div class="form-group"><label>USERNAME</label><input id="loginUser" placeholder="Enter username" autocomplete="username"></div>
 <div class="form-group"><label>PASSWORD</label><input id="loginPass" type="password" placeholder="Enter password" autocomplete="current-password"></div>
@@ -155,7 +175,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 <div class="nav-section">HSE SAFETY</div>
 <a class="nav-link" onclick="navigate('ptwList')"><span class="icon">&#128203;</span> PTW</a>
 <a class="nav-link" onclick="navigate('tbm')"><span class="icon">&#128308;</span> Toolbox Meeting</a>
-<a class="nav-link" onclick="navigate('safety')"><span class="icon">&#128161;</span> Safety Inspection</a>
 <div class="nav-section">QUALITY</div>
 <a class="nav-link" onclick="navigate('qaqc')"><span class="icon">&#128309;</span> Quality Inspection</a>
 <a class="nav-link" onclick="navigate('defect')"><span class="icon">&#128295;</span> Defect Management</a>
@@ -214,7 +233,9 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 <div id="checklistContainer"><p style="color:var(--text-muted);text-align:center">Select a Permit Type to load checklist...</p></div></div>
 
 <div class="form-card"><h3><span class="step-num">5</span> Supervisor Declaration &amp; Signature</h3>
-<div style="background:var(--bg);padding:16px;border-radius:8px;font-size:14px;color:var(--text);margin-bottom:16px;line-height:1.6">As Supervisor, I possess the required competence to oversee this activity. The Method Statement, Risk Assessment, and Safety Checklists are understood and complied with.</div>
+<div style="background:var(--bg);padding:16px;border-radius:12px;font-size:13px;color:var(--text);margin-bottom:16px;line-height:1.6;border-left:4px solid var(--accent)">
+    As Supervisor, I possess the required competence to oversee this activity. The Method Statement, Risk Assessment, and Safety Checklists are understood and complied with. Work areas and activities reported in this application are safe to proceed. By utilizing this electronic permit to work system, I acknowledge that my responsibilities and duties remain unaltered. This encompasses all obligations, whether contractual, statutory, or otherwise. Both myself and my company accept full accountability for any liabilities, injuries, or claims arising from or related to the use of this system.
+</div>
 <div id="gpsStatus" class="gps-status gps-loading">&#128205; Capturing GPS location...</div>
 <div style="display:flex;gap:12px;margin:12px 0">
 <button class="btn btn-sm btn-outline" onclick="refreshGPS()">&#128205; Refresh GPS</button>
@@ -227,20 +248,108 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 
 <div id="pagePtwView" class="page"><div id="ptwViewContent"></div></div>
 
-<div id="pageAnalytics" class="page">
-<div class="chart-grid"><div class="chart-card"><h3>&#128202; PTW by Type</h3><canvas id="chartType"></canvas></div>
-<div class="chart-card"><h3>&#128202; PTW by Status</h3><canvas id="chartStatus"></canvas></div></div></div>
+<div id="pageTbm" class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h3 id="tbmTitle" style="color:var(--navy)">📢 My Tasks (0)</h3>
+    </div>
+    <div class="tab-bar" id="tbmTabs"></div>
+    <div class="ptw-list" id="tbmList"></div>
+</div>
 
-<div id="pageTbm" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>&#128308; Toolbox Meeting</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
-<div id="pageSafety" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>&#128161; Safety Inspection</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
-<div id="pageQaqc" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>&#128309; Quality Inspection</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
-<div id="pageDefect" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>&#128295; Defect Management</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
-<div id="pageAdmin" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>&#9881;&#65039; Admin Panel</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
+<div id="pageTbmForm" class="page">
+    <div class="form-card">
+        <h3><span class="step-num">1</span> Meeting Information</h3>
+        <div class="form-row">
+            <div class="form-group"><label>Project *</label><select id="tProject"></select></div>
+            <div class="form-group"><label>Meeting Type *</label>
+                <select id="tType" class="form-control">
+                    <option>Daily Toolbox Meeting</option>
+                    <option>Weekly Safety Meeting</option>
+                    <option>Pre-Task Briefing</option>
+                    <option>Ad-hoc Safety Talk</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Date and Time *</label><input id="tDateTime" type="datetime-local"></div>
+            <div class="form-group"><label>Location Detail *</label><input id="tLocation" placeholder="e.g. Zone A Site Office"></div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <h3><span class="step-num">2</span> Safety Checklist (Health & Fit)</h3>
+        <div style="background:#fef3c7;padding:10px 16px;border-radius:8px;color:#92400e;font-size:13px;margin-bottom:16px">&#9888; All checklist items must be answered before signing</div>
+        <div id="tbmChecklistContainer"><p style="color:var(--text-muted);text-align:center;padding:20px">Loading checklist from Google Sheet...</p></div>
+        <div class="form-group" style="margin-top:15px"><label>Other Feedback</label><textarea id="tOtherFeedback" rows="2" class="form-control" placeholder="Enter here..."></textarea></div>
+    </div>
+
+    <div class="form-card">
+        <h3><span class="step-num">3</span> Work Details & Hazards</h3>
+        <div class="form-group"><label>Description of Work (Planned Work)</label><textarea id="tPlannedWork" rows="2" class="form-control" placeholder="Enter here..."></textarea></div>
+        <div class="form-group"><label>What types of hazards are the workers exposed to?</label><textarea id="tHazards" rows="2" class="form-control" placeholder="Enter here..."></textarea></div>
+        <div class="form-group"><label>Personal Protective Equipment Checks</label><textarea id="tPPE" rows="2" class="form-control" placeholder="List PPE required..."></textarea></div>
+        <div class="form-group"><label>Job Hazards Involved while working</label><textarea id="tBriefing" rows="2" class="form-control" placeholder="Briefing details..."></textarea></div>
+    </div>
+
+    <div class="form-card">
+        <h3><span class="step-num">4</span> Previous Work Done</h3>
+        <div class="form-group"><label>Previous Day (Workdone)</label><textarea id="tPrevWork" rows="2" class="form-control" placeholder="Enter here..."></textarea></div>
+        <div class="form-row">
+            <div class="form-group"><label>Date & Time (Workdone)</label><input id="tWorkdoneTime" type="datetime-local"></div>
+            <div class="form-group"><label>PIC for Approval *</label><select id="tPIC"></select></div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <h3><span class="step-num">3</span> Attendees</h3>
+        <table class="workers-table"><thead><tr><th>No.</th><th>Name</th><th>Designation</th><th></th></tr></thead><tbody id="tbmBody"></tbody></table>
+        <button class="btn btn-sm btn-outline" onclick="addTbmRow()" style="margin-top:8px">+ Add Attendee</button>
+    </div>
+
+    <div class="form-card">
+        <h3><span class="step-num">4</span> Attachments (Optional)</h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Upload relevant safety documents or photos (PDF/Images)</p>
+        <input type="file" id="tbmFile" class="form-control" accept="application/pdf,image/*">
+    </div>
+
+    <div class="form-card">
+        <h3><span class="step-num">5</span> Subcon Safety Coordinator Signature</h3>
+        <div id="tbmGpsStatus" class="gps-status gps-loading">📍 Capturing location...</div>
+        <button class="btn btn-yellow" style="width:100%;margin-top:15px" onclick="validateTBM()">✍️ Sign & Submit to PIC</button>
+        <div id="tbmSigPreview" style="display:none;margin-top:15px;text-align:center"><img id="tbmSigImg" style="max-height:80px;border:1px solid #eee"></div>
+    </div>
+</div>
+
+
+
+<div id="pageTbmView" class="page"><div id="tbmViewContent"></div></div>
+
+<div id="pageAnalytics" class="page">
+    <div class="form-card" style="margin-bottom:20px; display:flex; align-items:center; gap:15px; padding:15px; flex-wrap:wrap">
+        <label style="font-weight:bold; color:var(--navy)">🔍 Filter by Project:</label>
+        <select id="analyticsProjectFilter" class="form-control" style="max-width:250px" onchange="loadAnalytics()">
+            <option value="ALL">All Projects</option>
+        </select>
+        <button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="downloadAnalyticsReport()">🖨️ Download PDF Report</button>
+    </div>
+    <div class="chart-grid">
+        <div class="chart-card"><h3>📊 PTW by Type</h3><canvas id="chartType"></canvas></div>
+        <div class="chart-card"><h3>📊 PTW by Status</h3><canvas id="chartStatus"></canvas></div>
+        <div class="chart-card" style="grid-column: 1 / -1"><h3>📊 PTW by Project</h3><canvas id="chartProject"></canvas></div>
+    </div>
+</div>
+
+<div id="pageSafety" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>💡 Safety Inspection</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
+<div id="pageQaqc" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>🔵 Quality Inspection</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
+<div id="pageDefect" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>🔧 Defect Management</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
+<div id="pageAdmin" class="page"><div class="form-card" style="text-align:center;padding:60px"><h3>⚙️ Admin Panel</h3><p style="color:var(--text-muted);margin-top:12px">Coming soon...</p></div></div>
 
 </div></div></div>
 <script>
 // ============ CONFIG ============
-const API = 'https://script.google.com/macros/s/AKfycbxJqHJEoK5YWQ9dAeCj27aGlRhnhDMlglzrBGR7OZBQftliMYQ5wDId1D0bIBd81zFN/exec';
+// ⚠️ UPDATE THIS URL every time you re-deploy Apps Script as a NEW Deployment!
+// Apps Script → Deploy → Manage Deployments → copy /exec URL → paste below
+const API = 'https://script.google.com/macros/s/AKfycbw_NEyuNL05ztNVJee5ik0sI9qTdJbG6KpJiGPJ67SHYERMPPkAhISRjjJlin9G15EU/exec';
 let currentUser = null, allPTWs = [], allUsers = [], allProjects = [], currentSort = 'desc', currentTab = 'mytasks', gpsData = '', signatureData = '', chartType = null, chartStatus = null;
 
 // ============ API ============
@@ -248,8 +357,431 @@ async function api(action, params = {}) {
     params.action = action;
     try {
         const r = await fetch(API, { method: 'POST', body: JSON.stringify(params), headers: { 'Content-Type': 'text/plain' } });
+        if (!r.ok) return { success: false, error: 'Server error (HTTP ' + r.status + '). Check API URL or deployment settings.' };
         return await r.json();
-    } catch (e) { return { success: false, error: e.message }; }
+    } catch (e) { return { success: false, error: 'Cannot reach server. Check API URL or internet connection.' }; }
+}
+
+// ============ TBM MODULE ============
+let allTBMs = [];
+let currentTbmTab = 'mytasks';
+
+async function loadTBMList() {
+    showLoading();
+    const r = await api('gettbmlist');
+    hideLoading();
+    if (!r.success) return toast(r.error, 'error');
+    allTBMs = r.tbms || [];
+    renderTBMTabs();
+    renderTBMCards();
+}
+
+function renderTBMTabs() {
+    const tabs = ['mytasks', 'all', 'pending', 'recorded'];
+    const labels = ['⚡ MY TASKS', 'ALL', 'PENDING', 'RECORDED'];
+    let h = '';
+    tabs.forEach((t, i) => { h += `<button class="tab-btn ${currentTbmTab === t ? 'active' : ''}" onclick="currentTbmTab='${t}';renderTBMTabs();renderTBMCards()">${labels[i]}</button>`; });
+    document.getElementById('tbmTabs').innerHTML = h;
+}
+
+function isMyTbmTask(t) {
+    if(!currentUser) return false;
+    const uname = currentUser.username.toLowerCase();
+    const role = (currentUser.role || '').toUpperCase();
+    const status = (t.status || '').toUpperCase().trim();
+    if (status === 'PENDING_PIC') {
+        const assigned = (t.pic || '').toString().toLowerCase().trim();
+        if (assigned) return assigned === uname;
+        return role === 'PIC';
+    }
+    return false;
+}
+
+function renderTBMCards() {
+    let list = [...allTBMs];
+    if (currentTbmTab === 'mytasks') list = list.filter(t => isMyTbmTask(t));
+    else if (currentTbmTab === 'pending') list = list.filter(t => t.status && t.status.toUpperCase().trim() === 'PENDING_PIC');
+    else if (currentTbmTab === 'recorded') list = list.filter(t => t.status && t.status.toUpperCase().trim() === 'RECORDED');
+    
+    list.sort((a, b) => { const da = new Date(a.date || a.datetime || 0), db = new Date(b.date || b.datetime || 0); return currentSort === 'desc' ? db - da : da - db; });
+    const el = document.getElementById('tbmList');
+
+    const titleEl = document.getElementById('tbmTitle');
+    if(titleEl) titleEl.innerHTML = `<div style="display:flex;align-items:center;width:100%">📢 ${currentTbmTab === 'mytasks' ? 'My Tasks' : 'Meeting Records'} (${list.length})</div>`;
+
+    if (!list.length) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">No TBM records found</div>'; return; }
+    
+    el.innerHTML = list.map(t => {
+        const isPending = (t.status || '').toUpperCase() === 'PENDING_PIC';
+        return `
+        <div class="ptw-card" onclick="navigate('tbmView', '${t.id}')">
+            <div style="display:flex;justify-content:space-between;align-items:start;width:100%">
+                <div>
+                    <h4 style="color:var(--navy)">${t.id} <span class="badge badge-${statusClass(t.status)}">${t.status || 'RECORDED'}</span></h4>
+                    <p style="font-weight:600;font-size:14px;margin-top:4px">${t.type || 'Toolbox Meeting'} - ${t.project}</p>
+                    <div style="margin-top:8px;font-size:12px;color:var(--text-muted)">📍 ${t.location || 'Site'} | 📅 ${new Date(t.date || t.datetime).toLocaleDateString()}</div>
+                </div>
+                <div style="text-align:right">
+                    ${isPending ? '<div style="color:var(--warning);font-weight:700;font-size:11px">⚠️ AWAITING PIC APPROVAL</div>' : ''}
+                    <div style="margin-top:10px;color:var(--navy);font-weight:700">View Details →</div>
+                </div>
+            </div>
+        </div>
+    `}).join('');
+}
+
+async function initTBMForm() {
+    showLoading();
+    const pr = await api('getProjects');
+    const ur = await api('getUsers');
+    const cr = await api('gettbmchecklists');
+    hideLoading();
+    
+    if (pr.success) allProjects = pr.projects;
+    if (ur.success) allUsers = ur.users;
+
+    const sel = document.getElementById('tProject');
+    sel.innerHTML = '<option value="">Select Project...</option>' + 
+        allProjects.filter(p => p.active !== 'NO').map(p => `<option value="${p.code}">${p.code} - ${p.name}</option>`).join('');
+    
+    const tpic = document.getElementById('tPIC');
+    tpic.innerHTML = '<option value="">Select PIC...</option>' + 
+        allUsers.filter(u => u.active !== 'NO' && (u.role.toUpperCase() === 'PIC' || u.role.toUpperCase() === 'ADMIN')).map(u => `<option value="${u.username}">${u.name}</option>`).join('');
+
+    const now = new Date();
+    const localNow = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+    document.getElementById('tDateTime').value = localNow;
+
+    ['tLocation', 'tOtherFeedback', 'tPlannedWork', 'tHazards', 'tPPE', 'tBriefing', 'tPrevWork', 'tWorkdoneTime'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = '';
+    });
+
+    document.querySelectorAll('#tbmFeedback input[type="radio"]').forEach(r => r.checked = false);
+    document.getElementById('tbmBody').innerHTML = '';
+    document.getElementById('tbmSigPreview').style.display = 'none';
+    const fileEl = document.getElementById('tbmFile');
+    if(fileEl) fileEl.value = '';
+    signatureData = null;
+
+    // Render checklist from Google Sheet
+    const container = document.getElementById('tbmChecklistContainer');
+    const clItems = (cr && cr.success && cr.checklists && cr.checklists.length) ? cr.checklists : [];
+    if (clItems.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:20px">No checklist items.<br><small>Add rows to the <b>TBM_CHECKLISTS</b> Google Sheet.</small></p>';
+    } else {
+        const groups = {};
+        clItems.forEach(c => { const cat = c.category || 'General'; if (!groups[cat]) groups[cat] = []; groups[cat].push(c.item); });
+        container.innerHTML = Object.entries(groups).map(([cat, items]) => `
+            <div style="margin-bottom:16px">
+                <div style="font-weight:700;color:var(--navy);font-size:13px;margin-bottom:8px;padding:6px 10px;background:#f0f4f8;border-radius:6px">${cat}</div>
+                ${items.map((item, idx) => `
+                <div class="tbm-checklist-item" style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:6px">
+                    <span class="item-text" style="font-size:13px;flex:1;margin-right:10px">${item}</span>
+                    <div class="radio-group" style="display:flex;gap:6px;flex-shrink:0">
+                        <label class="cl-opt" style="padding:4px 10px;border:1px solid #ccc;border-radius:20px;cursor:pointer;font-size:12px"><input type="radio" name="tbmcl_${cat}_${idx}" value="YES" style="display:none"> YES</label>
+                        <label class="cl-opt" style="padding:4px 10px;border:1px solid #ccc;border-radius:20px;cursor:pointer;font-size:12px"><input type="radio" name="tbmcl_${cat}_${idx}" value="NO" style="display:none"> NO</label>
+                        <label class="cl-opt" style="padding:4px 10px;border:1px solid #ccc;border-radius:20px;cursor:pointer;font-size:12px"><input type="radio" name="tbmcl_${cat}_${idx}" value="N/A" style="display:none"> N/A</label>
+                    </div>
+                </div>`).join('')}
+            </div>`).join('');
+        container.querySelectorAll('.radio-group label').forEach(lbl => {
+            lbl.addEventListener('click', () => {
+                lbl.closest('.radio-group').querySelectorAll('label').forEach(l => { l.style.background=''; l.style.color='#333'; l.style.borderColor='#ccc'; });
+                lbl.style.background='var(--navy)'; lbl.style.color='#fff'; lbl.style.borderColor='var(--navy)';
+            });
+        });
+    }
+
+    addTbmRow();
+    refreshTbmGPS();
+}
+
+function addTbmRow() {
+    const b = document.getElementById('tbmBody');
+    const n = b.children.length + 1;
+    const r = document.createElement('tr');
+    r.innerHTML = `<td>${n}</td><td><input class="form-control attendee-name" placeholder="Name"></td><td><input class="form-control attendee-des" placeholder="Designation"></td><td><button class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove()" style="padding:4px 8px">✕</button></td>`;
+    b.appendChild(r);
+}
+
+async function validateTBM() {
+    // Check all dynamic checklist items are answered
+    const totalItems = document.querySelectorAll('.tbm-checklist-item').length;
+    const answeredItems = document.querySelectorAll('.tbm-checklist-item input:checked').length;
+    if (totalItems > 0 && answeredItems < totalItems) {
+        return toast('Please answer all checklist items (' + answeredItems + '/' + totalItems + ' done)', 'error');
+    }
+
+    const proj = document.getElementById('tProject').value;
+    const pic = document.getElementById('tPIC').value;
+    if(!proj || !pic) return toast('Please select Project and PIC', 'error');
+
+    const atts = [];
+    document.querySelectorAll('#tbmBody tr').forEach(tr => {
+        const n = tr.querySelector('.attendee-name').value.trim();
+        if (n) atts.push(n);
+    });
+    if(!atts.length) return toast('Please add at least one attendee name', 'error');
+
+    openSignaturePad('TBM');
+}
+
+async function submitTBM() {
+    // Collect dynamic checklist answers
+    const feedback = {};
+    const tbmChecklist = [];
+    document.querySelectorAll('.tbm-checklist-item').forEach((item, i) => {
+        const sel = item.querySelector('input:checked');
+        const text = item.querySelector('.item-text') ? item.querySelector('.item-text').textContent.trim() : '';
+        if (sel && text) {
+            tbmChecklist.push({ item: text, answer: sel.value });
+            feedback['q' + (i+1)] = sel.value;
+        }
+    });
+
+    const atts = [];
+    document.querySelectorAll('#tbmBody tr').forEach(tr => {
+        const n = tr.querySelector('.attendee-name').value.trim();
+        const d = tr.querySelector('.attendee-des').value.trim();
+        if (n) atts.push({ name: n, designation: d });
+    });
+    if(!atts.length) return toast('Please add at least one attendee', 'error');
+
+    // Collect TBM Checklist answers
+    const tbmChecklist = [];
+    document.querySelectorAll('.tbm-checklist-item').forEach(item => {
+        const sel = item.querySelector('input:checked');
+        const text = item.querySelector('.item-text').textContent.trim();
+        if (!sel) {
+            item.style.border = '1px solid var(--danger)';
+            item.style.background = '#fff5f5';
+        } else {
+            item.style.border = '1px solid #e5e7eb';
+            item.style.background = '';
+            tbmChecklist.push({ item: text, answer: sel.value });
+        }
+    });
+    const totalChkItems = document.querySelectorAll('.tbm-checklist-item').length;
+    if (tbmChecklist.length < totalChkItems) return toast('Please complete all checklist items', 'error');
+
+    const params = {
+        project: document.getElementById('tProject').value,
+        type: document.getElementById('tType').value,
+        dateTime: document.getElementById('tDateTime').value,
+        location: document.getElementById('tLocation').value,
+        feedback: JSON.stringify(feedback),
+        otherFeedback: document.getElementById('tOtherFeedback').value,
+        plannedWork: document.getElementById('tPlannedWork').value,
+        hazards: document.getElementById('tHazards').value,
+        ppe: document.getElementById('tPPE').value,
+        briefing: document.getElementById('tBriefing').value,
+        prevWork: document.getElementById('tPrevWork').value,
+        workdoneTime: document.getElementById('tWorkdoneTime').value,
+        pic: document.getElementById('tPIC').value,
+        attendees: JSON.stringify(atts),
+        checklist: JSON.stringify(tbmChecklist),
+        gps: gpsData,
+        signature: signatureData,
+        submittedBy: currentUser.username,
+        attachment: null
+    };
+
+    const fileEl = document.getElementById('tbmFile');
+    if (fileEl && fileEl.files.length > 0) {
+        showLoading();
+        const file = fileEl.files[0];
+        const reader = new FileReader();
+        const filePromise = new Promise(resolve => {
+            reader.onload = e => resolve({
+                base64: e.target.result.split(',')[1],
+                name: file.name
+            });
+            reader.readAsDataURL(file);
+        });
+        params.attachment = await filePromise;
+    }
+
+    if(!params.project || !params.pic) {
+        hideLoading();
+        return toast('Please fill all required fields (Project & PIC)', 'error');
+    }
+    if(!signatureData) return toast('Please sign the declaration', 'error');
+
+    showLoading();
+    const r = await api('submittbm', params);
+    hideLoading();
+    if(r.success) {
+        toast('TBM Submitted Successfully! Awaiting PIC approval.', 'success');
+        navigate('tbm');
+    } else toast(r.error, 'error');
+}
+
+async function loadTBMView(id) {
+    showLoading();
+    const r = await api('gettbmdetail', { id: id });
+    hideLoading();
+    if (!r.success) return toast(r.error, 'error');
+    const t = r.tbm;
+    let atts = [], f = {}; 
+    try { atts = JSON.parse(t.attendees || '[]'); } catch(e){}
+    try { f = JSON.parse(t.feedback || '{}'); } catch(e){}
+    
+    const role = currentUser.role.toUpperCase();
+    const isPending = (t.status || '').toUpperCase() === 'PENDING_PIC';
+    const canApprove = isPending && (role === 'PIC' || role === 'ADMIN') && (t.pic === currentUser.username || role === 'ADMIN');
+
+    document.getElementById('tbmViewContent').innerHTML = `
+        <div class="report-container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                <h2 style="color:var(--navy);margin:0;font-size:20px">${t.id} Toolbox Meeting</h2>
+                <div style="display:flex;gap:10px">
+                    <button class="btn btn-sm btn-outline" onclick="downloadTBMPDF('${t.id}')">🖨️ PDF</button>
+                    <button class="btn btn-sm btn-navy" onclick="navigate('tbm')">✕</button>
+                </div>
+            </div>
+            
+            <table class="report-table">
+                <tr><td class="lbl">Ref No.</td><td class="val">${t.id}</td><td rowspan="4" style="background:#f9f9f9;width:30%"></td></tr>
+                <tr><td class="lbl">Company Name</td><td class="val">${currentUser.company || 'Bosh Engineering Pte. Ltd.'}</td></tr>
+                <tr><td class="lbl">Project</td><td class="val">${t.project}</td></tr>
+                <tr><td class="lbl">Project Address</td><td class="val">-</td></tr>
+            </table>
+
+            <table class="report-table">
+                <tr><td class="lbl">Status</td><td class="val"><span class="badge badge-${statusClass(t.status)}">${t.status}</span></td><td class="lbl">Date and Time</td><td class="val">${new Date(t.datetime || t.date).toLocaleString()}</td></tr>
+                <tr><td class="lbl">Workers Involved</td><td class="val" colspan="3"><b>${atts.length} Worker(s)</b></td></tr>
+            </table>
+            ${atts.length > 0 ? `
+            <table class="report-table">
+                <tr style="background:#f0f4f8">
+                    <td class="lbl" style="font-weight:700;width:5%">No.</td>
+                    <td class="lbl" style="font-weight:700;width:40%">Name</td>
+                    <td class="lbl" style="font-weight:700">Designation</td>
+                </tr>
+                ${atts.map((a, i) => `<tr>
+                    <td class="val">${i + 1}</td>
+                    <td class="val">${a.name || a}</td>
+                    <td class="val">${a.designation || '-'}</td>
+                </tr>`).join('')}
+            </table>` : ''}
+
+            <h3 class="section-title">1. Submit Toolbox Meeting</h3>
+            <table class="report-table">
+                <tr><td class="lbl" style="width:20%">Location Detail</td><td class="val" colspan="3">${t.location || '-'}</td></tr>
+                <tr><td colspan="4" style="background:#f0f4f8;color:var(--navy);font-weight:700;font-size:11px">Worker's Feedback</td></tr>
+                <tr>
+                    <td class="lbl">1. Incident?</td><td class="val">${f.q1 || '-'}</td>
+                    <td class="lbl">2. Fit to Work?</td><td class="val">${f.q2 || '-'}</td>
+                </tr>
+                <tr>
+                    <td class="lbl">3. Mental Health?</td><td class="val">${f.q3 || '-'}</td>
+                    <td class="lbl">4. No Alcohol?</td><td class="val">${f.q4 || '-'}</td>
+                </tr>
+                <tr>
+                    <td class="lbl">5. Medication?</td><td class="val">${f.q5 || '-'}</td>
+                    <td class="lbl">Other Feedback</td><td class="val">${t.otherfeedback || '-'}</td>
+                </tr>
+            </table>
+
+            <table class="report-table">
+                <tr><td class="lbl">Description of Work</td><td class="val">${t.plannedwork || '-'}</td><td class="lbl">Others Work</td><td class="val">-</td></tr>
+                <tr><td class="lbl">Hazards Exposed</td><td class="val">${t.hazards || '-'}</td><td class="lbl">PPE Checks</td><td class="val">${t.ppe || '-'}</td></tr>
+                <tr><td class="lbl">PPE Others</td><td class="val">-</td><td class="lbl">Job Hazards Briefed</td><td class="val">${t.briefing || '-'}</td></tr>
+                <tr><td class="lbl">Previous Day Work</td><td class="val">${t.prevwork || '-'}</td><td class="lbl">Date & Time</td><td class="val">${t.workdonetime || '-'}</td></tr>
+                <tr><td class="lbl">Attachments</td><td class="val" colspan="3">${t.attachment ? `<a href="${t.attachment}" target="_blank" class="btn btn-xs btn-outline">📎 View Attachment</a>` : 'No attachment'}</td></tr>
+                <tr>
+                    <td class="lbl">Signature</td>
+                    <td class="val" colspan="3">
+                        <div style="display:flex;align-items:center;gap:15px">
+                            <img src="${t.signature}" style="max-height:60px">
+                            <div style="font-size:10px;color:#666">
+                                <b>Submitted By:</b> ${t.conductedby || t.submittedby}<br>
+                                <b>At:</b> ${new Date(t.date).toLocaleString()}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <h3 class="section-title">2. Review Toolbox Meeting</h3>
+            ${t.picsignature ? `
+            <table class="report-table">
+                <tr>
+                    <td class="lbl" style="width:20%">Approved By</td>
+                    <td class="val">
+                        <div style="display:flex;align-items:center;gap:15px">
+                            <img src="${t.picsignature}" style="max-height:60px">
+                            <div style="font-size:10px;color:#666">
+                                <b>PIC:</b> ${t.pic}<br>
+                                <b>At:</b> ${t.timestamp ? new Date(t.timestamp).toLocaleString() : '-'}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>` : `
+            <div style="padding:15px;border:1px solid #eee;color:#999;font-size:12px;text-align:center">Pending Action: PIC Approval Required</div>
+            `}
+        </div>
+
+        ${canApprove ? `
+        <div class="form-card" style="margin-top:20px;border-top:5px solid var(--warning)">
+            <h3>PIC Approval Required</h3>
+            <button class="btn btn-success btn-lg" style="width:100%" onclick="openSignaturePad('TBM_APPROVE')">✍️ Sign & Approve Meeting</button>
+        </div>` : ''}
+
+        <button class="btn btn-outline" style="width:100%;margin-top:20px" onclick="navigate('tbm')">Back to Records</button>
+    `;
+}
+
+async function downloadTBMPDF(id) {
+    showLoading();
+    const r = await api('gettbmpdf', { id });
+    hideLoading();
+    if (r.success) {
+        const link = document.createElement('a');
+        link.href = 'data:application/pdf;base64,' + r.base64;
+        link.download = `TBM_${id}.pdf`;
+        link.click();
+    } else toast(r.error, 'error');
+}
+
+async function approveTBM() {
+    if(!signatureData) return toast('Please provide your signature to approve', 'error');
+    const id = document.querySelector('#tbmViewContent h2').textContent.split(' ')[0];
+    
+    showLoading();
+    const r = await api('approvetbm', {
+        id: id,
+        signature: signatureData,
+        pic: currentUser.username,
+        gps: gpsData
+    });
+    hideLoading();
+    
+    if(r.success) {
+        toast('TBM Approved successfully!', 'success');
+        navigate('tbm');
+    } else toast(r.error, 'error');
+}
+
+function refreshTbmGPS() {
+    const el = document.getElementById('tbmGpsStatus');
+    if(!el) return;
+    el.className = 'gps-status gps-loading'; el.textContent = '📍 Capturing location...';
+    if (!navigator.geolocation) { el.className = 'gps-status gps-err'; el.textContent = 'GPS not supported'; return; }
+    navigator.geolocation.getCurrentPosition(async p => {
+        const lat = p.coords.latitude.toFixed(6), lon = p.coords.longitude.toFixed(6);
+        let gpsString = lat + ',' + lon;
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+            const data = await res.json();
+            gpsString = data.display_name || gpsString;
+            el.textContent = '📍 ' + gpsString;
+            el.className = 'gps-status gps-ok';
+            gpsData = gpsString;
+        } catch(e) { el.textContent = '📍 GPS: ' + gpsString; el.className = 'gps-status gps-ok'; gpsData = gpsString; }
+    }, e => { el.className = 'gps-status gps-err'; el.textContent = 'GPS Error: ' + e.message; });
 }
 
 // ============ UI UTILS ============
@@ -264,6 +796,14 @@ function hideLoading() { document.getElementById('loading').classList.remove('sh
 function closeModal() { document.getElementById('modal').classList.remove('show'); }
 
 // ============ AUTH ============
+async function checkServer() {
+    const r = await api('ping');
+    if (r.success) {
+        toast('✅ Connected! Version: ' + r.version + '. Actions: ' + r.actions.join(', '));
+    } else {
+        toast('❌ Connection Error: ' + (r.error || 'Check your URL'), 'error');
+    }
+}
 async function doLogin() {
     const u = document.getElementById('loginUser').value.trim();
     const p = document.getElementById('loginPass').value.trim();
@@ -274,11 +814,12 @@ async function doLogin() {
     hideLoading();
     if (r.success) {
         currentUser = r.user;
-        // Normalize properties for compatibility
-        currentUser.role = currentUser.Role || currentUser.role;
-        currentUser.username = currentUser.Username || currentUser.username;
-        currentUser.name = currentUser.Name || currentUser.username || 'User';
-        currentUser.company = currentUser.Company || currentUser.company || '';
+        // Normalize properties for compatibility and trim whitespace
+        currentUser.role = (currentUser.Role || currentUser.role || '').toString().trim();
+        currentUser.username = (currentUser.Username || currentUser.username || '').toString().trim();
+        currentUser.name = (currentUser.Name || currentUser.username || 'User').toString().trim();
+        currentUser.company = (currentUser.Company || currentUser.company || '').toString().trim();
+        currentUser.signature = (currentUser.Signature || currentUser.signature || '').toString().trim();
 
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('appLayout').style.display = 'flex';
@@ -288,6 +829,7 @@ async function doLogin() {
         document.getElementById('userRole').textContent = displayRole;
         document.getElementById('userAvatar').textContent = displayName.substring(0, 2).toUpperCase();
         navigate('dashboard');
+        silentGPS();
     } else { 
         err.textContent = r.error || 'Invalid credentials. Please try again.'; 
         err.style.display = 'block'; 
@@ -304,8 +846,8 @@ function doLogout() {
 }
 
 // ============ NAVIGATION ============
-const pageMap = { dashboard: 'pageDashboard', ptwList: 'pagePtwList', ptwForm: 'pagePtwForm', ptwView: 'pagePtwView', analytics: 'pageAnalytics', tbm: 'pageTbm', safety: 'pageSafety', qaqc: 'pageQaqc', defect: 'pageDefect', admin: 'pageAdmin' };
-const titleMap = { dashboard: 'Dashboard', ptwList: 'Permit to Work', ptwForm: 'New Permit To Work', ptwView: 'PTW Details', analytics: 'PTW Analytics', tbm: 'Toolbox Meeting', safety: 'Safety Inspection', qaqc: 'Quality Inspection', defect: 'Defect Management', admin: 'Admin' };
+const pageMap = { dashboard: 'pageDashboard', ptwList: 'pagePtwList', ptwForm: 'pagePtwForm', ptwView: 'pagePtwView', analytics: 'pageAnalytics', tbm: 'pageTbm', tbmForm: 'pageTbmForm', tbmView: 'pageTbmView' };
+const titleMap = { dashboard: 'Dashboard', ptwList: 'Permit to Work', ptwForm: 'New Permit To Work', ptwView: 'PTW Details', analytics: 'PTW Analytics', tbm: 'Toolbox Meeting', tbmForm: 'New TBM Record', tbmView: 'TBM Details' };
 
 function navigate(page, data) {
     const acts = document.getElementById('topbarActions');
@@ -317,10 +859,16 @@ function navigate(page, data) {
     const navIdx = { dashboard: 0, ptwList: 1, tbm: 2, safety: 3, qaqc: 4, defect: 5, analytics: 6, admin: 7 };
     if (navIdx[page] !== undefined && links[navIdx[page]]) links[navIdx[page]].classList.add('active');
     
-    const role = (currentUser.role || currentUser.Role || '').toUpperCase();
+    const role = (currentUser.role || currentUser.Role || '').toUpperCase().trim();
     if (page === 'dashboard' || page === 'ptwList') {
-        if (role === 'SUPERVISOR' || role === 'ADMIN') {
+        if (role === 'SUPERVISOR' || role === 'SUBCON SAFETY COORDINATOR' || role === 'ADMIN') {
             acts.innerHTML = '<button class="btn btn-sm btn-yellow" onclick="navigate(\'ptwForm\')">+ NEW PTW</button>';
+        } else {
+            acts.innerHTML = '';
+        }
+    } else if (page === 'tbm') {
+        if (role !== 'PIC') {
+            acts.innerHTML = '<button class="btn btn-sm btn-yellow" onclick="navigate(\'tbmForm\')">+ NEW TBM</button>';
         } else {
             acts.innerHTML = '';
         }
@@ -328,10 +876,19 @@ function navigate(page, data) {
 
     if (page === 'dashboard') loadDashboard();
     if (page === 'ptwList') loadPTWList();
+    if (page === 'tbm') loadTBMList();
+    if (page === 'tbmForm') {
+        if (role === 'PIC') {
+            toast('Access Denied: PICs cannot create Toolbox Meetings', 'error');
+            navigate('tbm');
+            return;
+        }
+        initTBMForm();
+    }
+    if (page === 'tbmView') loadTBMView(data);
     if (page === 'ptwForm') {
-        const role = (currentUser.role || currentUser.Role || '').toUpperCase();
-        if (role !== 'SUPERVISOR' && role !== 'ADMIN') {
-            toast('Access Denied: Only Supervisors can apply for PTW', 'error');
+        if (role !== 'SUPERVISOR' && role !== 'SUBCON SAFETY COORDINATOR' && role !== 'ADMIN') {
+            toast('Access Denied: Only Supervisors or Safety Coordinators can apply for PTW', 'error');
             navigate('dashboard');
             return;
         }
@@ -355,34 +912,68 @@ async function loadDashboard() {
 function updateStats() {
     const total = allPTWs.length;
     const myTasks = allPTWs.filter(p => isMyTask(p)).length;
-    const pending = allPTWs.filter(p => p.Status && p.Status.startsWith('PENDING')).length;
-    const expiring = allPTWs.filter(p => p.Status === 'ACTIVE' && isExpiringSoon(p.ValidityEnd)).length;
-    const active = allPTWs.filter(p => p.Status === 'ACTIVE').length;
+    const pending = allPTWs.filter(p => p.status && p.status.toUpperCase().trim().startsWith('PENDING')).length;
+    const active = allPTWs.filter(p => p.status === 'ACTIVE').length;
+    const expiredCount = allPTWs.filter(p => p.status === 'ACTIVE' && isExpired(p.validityend)).length;
+    const soonCount = allPTWs.filter(p => p.status === 'ACTIVE' && isExpiringSoon(p.validityend)).length;
+    const alertCount = expiredCount + soonCount;
+
     document.getElementById('companyLabel').textContent = currentUser.company || '';
-    document.getElementById('statCards').innerHTML =
-        `<div class="stat-card"><div class="number">${total}</div><div class="label">Total PTWs</div></div>` +
-        `<div class="stat-card"><div class="number">⚡ ${myTasks}</div><div class="label">My Tasks</div></div>` +
-        `<div class="stat-card" style="${expiring > 0 ? 'border-bottom: 3px solid var(--danger)' : ''}"><div class="number" style="${expiring > 0 ? 'color: var(--danger)' : ''}">${expiring}</div><div class="label">Expiring Soon</div></div>` +
-        `<div class="stat-card"><div class="number">${pending}</div><div class="label">Pending</div></div>` +
-        `<div class="stat-card"><div class="number">${active}</div><div class="label">Active</div></div>`;
+    const statsContainer = document.getElementById('statCards');
+    if (statsContainer) {
+        statsContainer.innerHTML = 
+            `<div class="stat-card"><div class="number" style="color:var(--navy)">${total}</div><div class="label">Total PTWs</div></div>` +
+            `<div class="stat-card"><div class="number" style="color:var(--warning)">⚡ ${myTasks}</div><div class="label">My Tasks</div></div>` +
+            `<div class="stat-card" style="${alertCount > 0 ? 'border-bottom: 3px solid var(--danger)' : ''}"><div class="number" style="${alertCount > 0 ? 'color: var(--danger)' : ''}">${alertCount}</div><div class="label">Expired/Soon</div></div>` +
+            `<div class="stat-card"><div class="number" style="color:var(--success)">${pending}</div><div class="label">Pending</div></div>` +
+            `<div class="stat-card"><div class="number" style="color:var(--info)">${active}</div><div class="label">Active</div></div>`;
+    }
 }
-function isExpiringSoon(endTime) {
-    if (!endTime) return false;
-    const end = new Date(endTime);
+function isExpired(end) {
+    if (!end) return false;
+    const expiry = new Date(end);
+    return expiry < new Date();
+}
+function isExpiringSoon(end) {
+    if (!end) return false;
     const now = new Date();
-    const diff = (end - now) / (1000 * 60 * 60); // Difference in hours
+    const expiry = new Date(end);
+    const diff = (expiry - now) / (1000 * 60 * 60);
     return diff > 0 && diff <= 2;
 }
 function isMyTask(p) {
-    if (!currentUser) return false;
-    const role = (currentUser.Role || currentUser.role || '').toUpperCase();
-    const uname = (currentUser.Username || currentUser.username || '').toLowerCase();
-    // Only the SPECIFICALLY assigned PIC (Supervisor) can see this task
-    if (p.Status === 'PENDING_PIC' && p.PIC && p.PIC.toLowerCase() === uname) return true;
-    if (p.Status === 'PENDING_EHS' && role === 'EHS') return true;
-    if (p.Status === 'PENDING_PM' && role === 'PM') return true;
+    if (!currentUser || !p || !p.status) return false;
+    const role = (currentUser.role || '').toString().toUpperCase().trim();
+    const uname = (currentUser.username || '').toString().toLowerCase().trim();
+    const status = (p.status || '').toString().toUpperCase().trim();
+    
+    // Supervisors and Subcon Safety Coordinators see permits they submitted that are EXPIRED or REJECTED
+    if (role === 'SUPERVISOR' || role === 'SUBCON SAFETY COORDINATOR') {
+        const submittedBy = (p.submittedby || '').toString().toLowerCase().trim();
+        if (submittedBy !== uname) return false;
+        return (status === 'ACTIVE' && isExpired(p.validityend));
+    }
+
+    if (role === 'ADMIN') return status !== 'CLOSED' && status !== 'REJECTED';
+
+    if (status === 'PENDING_PIC') {
+        const assigned = (p.pic || '').toString().toLowerCase().trim();
+        if (assigned) return assigned === uname;
+        return role === 'PIC';
+    }
+    if (status === 'PENDING_EHS') {
+        const assigned = (p.ehs || '').toString().toLowerCase().trim();
+        if (assigned) return assigned === uname;
+        return role === 'EHS';
+    }
+    if (status === 'PENDING_PM') {
+        const assigned = (p.pm || '').toString().toLowerCase().trim();
+        if (assigned) return assigned === uname;
+        return role === 'PM';
+    }
     return false;
 }
+
 function renderTabs(cid) {
     const tabs = ['mytasks', 'all', 'pending', 'active', 'closed', 'rejected'];
     const labels = ['⚡ MY TASKS', 'ALL', 'PENDING', 'ACTIVE', 'CLOSED', 'REJECTED'];
@@ -390,24 +981,54 @@ function renderTabs(cid) {
     tabs.forEach((t, i) => { h += `<button class="tab-btn ${currentTab === t ? 'active' : ''}" onclick="currentTab='${t}';renderTabs('${cid}');renderPTWCards('${listId}')">${labels[i]}</button>`; });
     document.getElementById(cid).innerHTML = h;
 }
+
 function renderPTWCards(cid) {
     let list = [...allPTWs];
     if (currentTab === 'mytasks') list = list.filter(p => isMyTask(p));
-    else if (currentTab === 'pending') list = list.filter(p => p.Status && p.Status.startsWith('PENDING'));
-    else if (currentTab === 'active') list = list.filter(p => p.Status === 'ACTIVE');
-    else if (currentTab === 'closed') list = list.filter(p => p.Status === 'CLOSED');
-    else if (currentTab === 'rejected') list = list.filter(p => p.Status === 'REJECTED');
-    list.sort((a, b) => { const da = new Date(a.SubmittedAt || 0), db = new Date(b.SubmittedAt || 0); return currentSort === 'desc' ? db - da : da - db; });
+    else if (currentTab === 'pending') list = list.filter(p => p.status && p.status.toUpperCase().trim().startsWith('PENDING'));
+    else if (currentTab === 'active') list = list.filter(p => p.status === 'ACTIVE');
+    else if (currentTab === 'closed') list = list.filter(p => p.status === 'CLOSED');
+    else if (currentTab === 'rejected') list = list.filter(p => p.status === 'REJECTED');
+    
+    list.sort((a, b) => { const da = new Date(a.submittedat || 0), db = new Date(b.submittedat || 0); return currentSort === 'desc' ? db - da : da - db; });
     const el = document.getElementById(cid);
-    document.getElementById('taskTitle').textContent = `⚡ ${currentTab === 'mytasks' ? 'My Tasks' : 'PTW List'} (${list.length})`;
+    const role = (currentUser.role || '').toUpperCase();
+    const canBulk = (role === 'PIC' || role === 'EHS' || role === 'PM' || role === 'ADMIN') && currentUser.signature;
+    
+    let bulkBtn = '';
+    if (canBulk && currentTab === 'mytasks' && list.length > 0) {
+        bulkBtn = `<button class="btn btn-success btn-xs" onclick="startBulkApprove()" style="margin-left:auto;margin-bottom:10px">⚡ Bulk Approve (${list.length})</button>`;
+    }
+
+    document.getElementById('taskTitle').innerHTML = `<div style="display:flex;align-items:center;width:100%">⚡ ${currentTab === 'mytasks' ? 'My Tasks' : 'PTW List'} (${list.length}) ${bulkBtn}</div>`;
     if (!list.length) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">No permits found</div>'; return; }
+    
     el.innerHTML = list.map(p => {
-        const expiring = p.Status === 'ACTIVE' && isExpiringSoon(p.ValidityEnd);
+        const soon = p.status === 'ACTIVE' && isExpiringSoon(p.validityend);
+        const expired = p.status === 'ACTIVE' && isExpired(p.validityend);
+        
+        let assignedTo = '';
+        const status = (p.status || '').toUpperCase().trim();
+        if (status === 'PENDING_PIC') assignedTo = p.pic || 'PIC Role';
+        else if (status === 'PENDING_EHS') assignedTo = p.ehs || 'EHS Role';
+        else if (status === 'PENDING_PM') assignedTo = p.pm || 'PM Role';
+
         return `
-        <div class="ptw-card ${expiring ? 'expiring-soon-card' : ''}" onclick="navigate('ptwView','${p.ID}')">
-            <div><div class="ptw-id">${p.ID} <span class="badge badge-${statusClass(p.Status)}">${p.Status}</span> ${expiring ? '<span class="badge badge-danger">⚠️ EXPIRING SOON</span>' : ''}</div>
-            <div class="ptw-meta">${p.Type} · ${p.Location || ''} · ${formatDate(p.SubmittedAt)}</div></div>
-            <div style="text-align:right;font-size:13px;color:var(--text-muted)">By: ${p.SubmittedBy || ''}<br><span style="color:var(--navy);font-weight:600">View →</span></div>
+        <div class="ptw-card ${expired ? 'expired-card' : (soon ? 'expiring-soon-card' : '')}" onclick="navigate('ptwView','${p.id}')">
+            <div>
+                <div class="ptw-id">
+                    ${p.id} 
+                    <span class="badge badge-${statusClass(p.status)}">${p.status}</span> 
+                    ${expired ? '<span class="badge badge-danger">🚫 ALREADY EXPIRED</span>' : ''}
+                    ${soon ? '<span class="badge badge-warning" style="background:#f59e0b">⚠️ EXPIRING SOON</span>' : ''}
+                </div>
+                <div class="ptw-meta">${p.type} · ${p.location || ''} · ${formatDate(p.submittedat)}</div>
+                ${assignedTo ? `<div style="font-size:11px;color:var(--info);font-weight:600;margin-top:4px">📍 Assigned to: ${assignedTo}</div>` : ''}
+            </div>
+            <div style="text-align:right;font-size:13px;color:var(--text-muted)">
+                By: ${p.submittedby || 'System'}<br>
+                <span style="color:var(--navy);font-weight:600">View →</span>
+            </div>
         </div>`;
     }).join('');
 }
@@ -420,17 +1041,53 @@ function sortPTW(dir) { currentSort = dir; renderPTWCards(document.getElementByI
 async function initForm() {
     signatureData = ''; gpsData = ''; document.getElementById('signaturePreview').style.display = 'none';
     ['fProject', 'fType', 'fLocation', 'fStart', 'fEnd', 'fContact', 'fPIC', 'fDesc', 'fEquipment'].forEach(id => document.getElementById(id).value = '');
+    
+    // Auto-set End Time to 12 hours after Start Time
+    document.getElementById('fStart').onchange = (e) => {
+        if (e.target.value) {
+            const start = new Date(e.target.value);
+            const end = new Date(start.getTime() + (12 * 60 * 60 * 1000));
+            const tzOffset = end.getTimezoneOffset() * 60000;
+            const localEnd = new Date(end.getTime() - tzOffset).toISOString().slice(0, 16);
+            document.getElementById('fEnd').value = localEnd;
+        }
+    };
+    
+    // Default Start Time to Now
+    const now = new Date();
+    const localNow = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+    document.getElementById('fStart').value = localNow;
+    document.getElementById('fStart').dispatchEvent(new Event('change'));
+
     document.getElementById('checklistContainer').innerHTML = '<p style="text-align:center;color:var(--text-muted)">Select a Permit Type...</p>';
-    if (!allProjects.length) { const r = await api('getProjects'); if (r.success) allProjects = r.projects; }
-    const ps = document.getElementById('fProject'); ps.innerHTML = '<option value="">Select Project...</option>' + allProjects.map(p => `<option value="${p.Code}">${p.Code} - ${p.Name}</option>`).join('');
-    if (!allUsers.length) { const r = await api('getUsers'); if (r.success) allUsers = r.users; }
-    const pic = document.getElementById('fPIC'); pic.innerHTML = '<option value="">Select PIC...</option>' + allUsers.filter(u => u.Active !== 'NO' && (u.Role.toUpperCase() === 'PIC' || u.Role.toUpperCase() === 'SUPERVISOR')).map(u => `<option value="${u.Username}">${u.Name}</option>`).join('');
+    // Always fetch latest projects and users to ensure new entries show up
+    showLoading();
+    const pr = await api('getProjects');
+    const ur = await api('getUsers');
+    hideLoading();
+    
+    if (pr.success) allProjects = pr.projects;
+    if (ur.success) allUsers = ur.users;
+
+    const ps = document.getElementById('fProject');
+    ps.innerHTML = '<option value="">Select Project...</option>' + 
+        allProjects.filter(p => p.active === 'YES').map(p => `<option value="${p.code}">${p.code} - ${p.name}</option>`).join('');
+        
+    const pic = document.getElementById('fPIC');
+    pic.innerHTML = '<option value="">Select PIC...</option>' + 
+        allUsers.filter(u => u.active !== 'NO' && u.role.toUpperCase() === 'PIC').map(u => `<option value="${u.username}">${u.name}</option>`).join('');
     
     // Dynamically load Permit Types from Checklist tab
     showLoading(); const cr = await api('getChecklistTypes'); hideLoading();
     if (cr.success) {
         const ts = document.getElementById('fType');
-        ts.innerHTML = '<option value="">Select Type...</option>' + cr.types.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+        const options = cr.types
+            .filter(t => t.name || t.type)
+            .map(t => {
+                const n = t.name || t.type || 'Unnamed Type';
+                return `<option value="${n}">${n}</option>`;
+            }).join('');
+        ts.innerHTML = '<option value="">Select Type...</option>' + options;
     }
     
     document.getElementById('workersBody').innerHTML = ''; addWorkerRow();
@@ -453,69 +1110,279 @@ async function loadChecklist() {
             <div class="checklist-item">
                 <div class="item-text">${item}</div>
                 <div class="radio-group">
-                    <label><input type="radio" name="chk_${gIdx}_${iIdx}" value="Yes"> Yes</label>
-                    <label><input type="radio" name="chk_${gIdx}_${iIdx}" value="No"> No</label>
+                    <label><input type="radio" name="chk_${gIdx}_${iIdx}" value="Yes"> YES</label>
+                    <label><input type="radio" name="chk_${gIdx}_${iIdx}" value="No"> NO</label>
                     <label><input type="radio" name="chk_${gIdx}_${iIdx}" value="NA"> N/A</label>
-                    <label><input type="radio" name="chk_${gIdx}_${iIdx}" value="Others" onchange="document.getElementById('oth_${gIdx}_${iIdx}').style.display=this.checked?'block':'none'"> Others</label>
+                    <label><input type="radio" name="chk_${gIdx}_${iIdx}" value="Others" onchange="document.getElementById('oth_${gIdx}_${iIdx}').style.display=this.checked?'block':'none'"> OTHER</label>
                 </div>
             </div>
-            <div id="oth_${gIdx}_${iIdx}" style="display:none;margin-bottom:10px"><input class="form-group" placeholder="Specify..."></div>
+            <div id="oth_${gIdx}_${iIdx}" style="display:none;margin:4px 0 12px"><input class="form-group" style="margin-bottom:0;padding:8px 12px" placeholder="Please specify reason or details..."></div>
         `).join('')}`).join('');
 }
 
 // ============ GPS & SIG ============
-function refreshGPS() {
-    const el = document.getElementById('gpsStatus'); el.className = 'gps-status gps-loading'; el.textContent = '📍 Capturing GPS...';
-    if (!navigator.geolocation) { el.className = 'gps-status gps-err'; el.textContent = 'GPS not supported'; return; }
+function silentGPS() {
+    if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(async p => {
         const lat = p.coords.latitude.toFixed(6);
         const lon = p.coords.longitude.toFixed(6);
         gpsData = lat + ',' + lon;
-        el.className = 'gps-status gps-ok'; el.textContent = '📍 Capturing address...';
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+            const data = await res.json();
+            if (data.display_name) gpsData = data.display_name;
+        } catch(e) {}
+    }, () => {}, { enableHighAccuracy: true });
+}
+function refreshGPS() {
+    const el = document.getElementById('gpsStatus'); 
+    el.className = 'gps-status gps-loading'; 
+    el.textContent = '📍 Capturing address...';
+    
+    // Disable submit buttons while loading address
+    const btns = document.querySelectorAll('.btn-navy, .btn-success, .btn-pm');
+    btns.forEach(b => b.disabled = true);
+
+    if (!navigator.geolocation) { 
+        el.className = 'gps-status gps-err'; 
+        el.textContent = 'GPS not supported'; 
+        btns.forEach(b => b.disabled = false);
+        return; 
+    }
+
+    navigator.geolocation.getCurrentPosition(async p => {
+        const lat = p.coords.latitude.toFixed(6);
+        const lon = p.coords.longitude.toFixed(6);
+        gpsData = lat + ',' + lon; // Fallback
+        
         try {
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
             const data = await res.json();
             const addr = data.display_name || gpsData;
+            el.className = 'gps-status gps-ok'; 
             el.textContent = '📍 ' + addr;
-            // Optionally auto-fill location field if empty
-            const locField = document.getElementById('fLocation');
-            if (!locField.value) locField.value = data.address.road || data.address.suburb || '';
-        } catch(e) { el.textContent = '📍 GPS: ' + gpsData; }
-    }, e => { el.className = 'gps-status gps-err'; el.textContent = 'GPS Error: ' + e.message; });
+            gpsData = addr; // Store readable address
+        } catch(e) { 
+            el.className = 'gps-status gps-ok';
+            el.textContent = '📍 GPS: ' + gpsData; 
+        }
+        btns.forEach(b => b.disabled = false);
+    }, e => { 
+        el.className = 'gps-status gps-err'; 
+        el.textContent = 'GPS Error: ' + e.message; 
+        btns.forEach(b => b.disabled = false);
+    }, { timeout: 10000, enableHighAccuracy: true });
 }
-function openSignaturePad() {
-    document.getElementById('modalContent').innerHTML = `<h3>✍️ Signature</h3><canvas id="sigCanvas" width="400" height="200" style="border:1px solid #ccc;width:100%"></canvas><div style="display:flex;gap:10px;margin-top:10px"><button class="btn btn-outline btn-sm" onclick="clearSig()">Clear</button><button class="btn btn-yellow btn-sm" style="flex:1" onclick="saveSig()">Save</button></div>`;
+function openSignaturePad(context = 'PTW') {
+    window.currentSigContext = context;
+    let savedHtml = '';
+    if (currentUser && currentUser.signature) {
+        savedHtml = `
+            <div style="margin-bottom:15px;padding:12px;border:2px dashed var(--accent);border-radius:12px;background:#fdfcf0;text-align:center">
+                <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Saved Signature Found</div>
+                <img src="${currentUser.signature}" style="max-height:80px;display:block;margin:0 auto;cursor:pointer;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1))" onclick="useSavedSig()">
+                <button class="btn btn-yellow btn-sm" style="margin-top:12px;width:100%" onclick="useSavedSig()">⚡ Use Saved Signature</button>
+            </div>
+            <div style="text-align:center;margin:15px 0;color:var(--text-muted);font-size:11px;font-weight:700">——— OR DRAW NEW ———</div>
+        `;
+    }
+
+    document.getElementById('modalContent').innerHTML = `
+        <h3 style="margin-bottom:20px">✍️ Signature</h3>
+        ${savedHtml}
+        <canvas id="sigCanvas" width="400" height="200" style="border:2px solid #eee;border-radius:12px;width:100%;background:#fff;touch-action:none;cursor:crosshair"></canvas>
+        <div style="margin-top:12px;display:flex;align-items:center;gap:10px;padding:0 5px">
+            <input type="checkbox" id="saveSigCheck" style="width:18px;height:18px;cursor:pointer" ${currentUser && currentUser.signature ? '' : 'checked'}>
+            <label for="saveSigCheck" style="font-size:13px;cursor:pointer;font-weight:500;color:var(--text)">Save as my default signature</label>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:20px">
+            <button class="btn btn-outline btn-sm" style="flex:1" onclick="clearSig()">Clear</button>
+            <button class="btn btn-navy btn-sm" style="flex:2" onclick="saveSig()">Confirm & Continue</button>
+        </div>
+    `;
     document.getElementById('modal').classList.add('show'); initSig();
+}
+
+function useSavedSig() {
+    signatureData = currentUser.signature;
+    document.getElementById('sigPreviewImg').src = signatureData; 
+    document.getElementById('signaturePreview').style.display = 'block'; 
+    if(window.currentSigContext === 'TBM') { 
+        document.getElementById('tbmSigImg').src = signatureData; 
+        document.getElementById('tbmSigPreview').style.display = 'block'; 
+    }
+    closeModal();
+    if(window.currentSigContext === 'TBM') submitTBM();
+    if(window.currentSigContext === 'TBM_APPROVE') approveTBM();
+    if(window.currentSigContext === 'PTW_APPROVE') approvePTW();
 }
 let sigCtx, drawing = false;
 function initSig() {
-    const c = document.getElementById('sigCanvas'); sigCtx = c.getContext('2d'); sigCtx.lineWidth = 2; sigCtx.lineCap = 'round';
-    const getP = (e) => { const r = c.getBoundingClientRect(); const t = e.touches ? e.touches[0] : e; return { x: (t.clientX - r.left) * (c.width / r.width), y: (t.clientY - r.top) * (c.height / r.height) }; };
-    c.onmousedown = c.ontouchstart = (e) => { e.preventDefault(); drawing = true; const p = getP(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); };
-    c.onmousemove = c.ontouchmove = (e) => { if (!drawing) return; e.preventDefault(); const p = getP(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); };
-    c.onmouseup = c.ontouchend = () => drawing = false;
+    const c = document.getElementById('sigCanvas'); 
+    sigCtx = c.getContext('2d'); 
+    sigCtx.lineWidth = 2.5; 
+    sigCtx.lineCap = 'round';
+    sigCtx.strokeStyle = '#000';
+    
+    const getP = (e) => { 
+        const r = c.getBoundingClientRect(); 
+        const t = e.touches ? e.touches[0] : e; 
+        return { 
+            x: (t.clientX - r.left) * (c.width / r.width), 
+            y: (t.clientY - r.top) * (c.height / r.height) 
+        }; 
+    };
+
+    c.onmousedown = c.ontouchstart = (e) => { 
+        drawing = true; 
+        const p = getP(e); 
+        sigCtx.beginPath(); 
+        sigCtx.moveTo(p.x, p.y); 
+    };
+
+    c.onmousemove = c.ontouchmove = (e) => { 
+        if (!drawing) return; 
+        e.preventDefault(); 
+        const p = getP(e); 
+        sigCtx.lineTo(p.x, p.y); 
+        sigCtx.stroke(); 
+    };
+
+    c.onmouseup = c.ontouchend = c.onmouseleave = () => {
+        if (drawing) {
+            sigCtx.closePath();
+            drawing = false;
+        }
+    };
 }
 function clearSig() { sigCtx.clearRect(0, 0, 400, 200); }
-function saveSig() {
-    signatureData = document.getElementById('sigCanvas').toDataURL('image/jpeg', 0.5);
-    document.getElementById('sigPreviewImg').src = signatureData; document.getElementById('signaturePreview').style.display = 'block'; closeModal();
+async function saveSig() {
+    const canvas = document.getElementById('sigCanvas');
+    signatureData = canvas.toDataURL('image/png');
+    
+    // Simple check if canvas is blank
+    const blank = document.createElement('canvas');
+    blank.width = canvas.width; blank.height = canvas.height;
+    if (signatureData === blank.toDataURL()) return toast('Please provide a signature', 'error');
+
+    if (document.getElementById('saveSigCheck').checked) {
+        showLoading();
+        try {
+            const r = await api('savesignature', { username: currentUser.username, signature: signatureData });
+            if (r.success) {
+                currentUser.signature = signatureData;
+                toast('Signature saved to profile!', 'success');
+            } else {
+                toast('Error saving signature: ' + r.error, 'error');
+            }
+        } catch (e) {
+            toast('Network error saving signature', 'error');
+        }
+        hideLoading();
+    }
+    
+    document.getElementById('sigPreviewImg').src = signatureData; 
+    document.getElementById('signaturePreview').style.display = 'block'; 
+    if(window.currentSigContext === 'TBM') { 
+        document.getElementById('tbmSigImg').src = signatureData; 
+        document.getElementById('tbmSigPreview').style.display = 'block'; 
+    }
+    closeModal();
+    if(window.currentSigContext === 'TBM') submitTBM();
+    if(window.currentSigContext === 'TBM_APPROVE') approveTBM();
+    if(window.currentSigContext === 'PTW_APPROVE') approvePTW();
 }
 
 // ============ SUBMIT ============
 async function submitPTW() {
-    const vals = { project: 'fProject', type: 'fType', location: 'fLocation', validityStart: 'fStart', validityEnd: 'fEnd', contactNumber: 'fContact', pic: 'fPIC', workDescription: 'fDesc', equipment: 'fEquipment' };
-    const p = {}; for (let k in vals) { p[k] = document.getElementById(vals[k]).value; if (!p[k]) return toast('Fill all fields', 'error'); }
-    if (!signatureData) return toast('Signature required', 'error');
-    const workers = []; document.querySelectorAll('#workersBody tr').forEach(tr => { const inp = tr.querySelectorAll('input'); if (inp[0].value) workers.push({ name: inp[0].value, designation: inp[1].value }); });
-    const checklist = []; document.querySelectorAll('.checklist-item').forEach((item, i) => {
-        const sel = item.querySelector('input:checked');
-        if (sel) {
-            let ans = sel.value; if (ans === 'Others') ans = 'Others: ' + item.nextElementSibling.querySelector('input').value;
-            checklist.push({ item: item.querySelector('.item-text').textContent, answer: ans });
+    const vals = { 
+        project: 'fProject', 
+        type: 'fType', 
+        location: 'fLocation', 
+        validityStart: 'fStart', 
+        validityEnd: 'fEnd', 
+        contactNumber: 'fContact', 
+        pic: 'fPIC', 
+        workDescription: 'fDesc', 
+        equipment: 'fEquipment' 
+    };
+    
+    const p = {}; 
+    for (let k in vals) { 
+        const el = document.getElementById(vals[k]);
+        p[k] = el.value.trim(); 
+        if (!p[k]) {
+            el.focus();
+            return toast(`Please fill in: ${k.replace(/([A-Z])/g, ' $1').toUpperCase()}`, 'error'); 
+        }
+    }
+
+    const workers = []; 
+    document.querySelectorAll('#workersBody tr').forEach(tr => { 
+        const inp = tr.querySelectorAll('input'); 
+        if (inp[0].value.trim()) {
+            workers.push({ name: inp[0].value.trim(), designation: inp[1].value.trim() }); 
         }
     });
-    showLoading(); const r = await api('submitPTW', { ...p, workers: JSON.stringify(workers), checklist: JSON.stringify(checklist), gps: gpsData, signature: signatureData, submittedBy: currentUser.username, company: currentUser.company });
-    hideLoading(); if (r.success) { toast('PTW Submitted: ' + r.id, 'success'); navigate('dashboard'); } else toast(r.error, 'error');
+
+    if (workers.length === 0) return toast('Please add at least one Worker Involved', 'error');
+    if (!signatureData) return toast('Signature required', 'error');
+    const checklist = []; 
+    let missingItems = [];
+    document.querySelectorAll('.checklist-item').forEach((item, i) => {
+        const sel = item.querySelector('input:checked');
+        const textEl = item.querySelector('.item-text');
+        if (!textEl) return;
+        const text = textEl.textContent;
+        
+        if (sel) {
+            let ans = sel.value; 
+            if (ans === 'Others') {
+                const otherInp = item.nextElementSibling ? item.nextElementSibling.querySelector('input') : null;
+                if (otherInp && !otherInp.value) {
+                    missingItems.push(text + ' (Details)');
+                    item.nextElementSibling.style.border = '1px solid var(--danger)';
+                } else if (otherInp) {
+                    ans = 'Others: ' + otherInp.value;
+                    item.nextElementSibling.style.border = 'none';
+                }
+            }
+            checklist.push({ item: text, answer: ans });
+            item.style.background = 'var(--bg)';
+            item.style.border = 'none';
+        } else {
+            missingItems.push(text);
+            item.style.background = '#fff5f5';
+            item.style.border = '1px solid var(--danger)';
+        }
+    });
+
+    if (missingItems.length > 0) {
+        const firstMissing = missingItems[0];
+        toast('Checklist Incomplete: ' + firstMissing + (missingItems.length > 1 ? ' ...' : ''), 'error');
+        // Scroll to the first missing item
+        const firstEl = document.querySelector('.checklist-item[style*="danger"]') || document.querySelector('.checklist-item');
+        if (firstEl) firstEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
+    const sTime = new Date(p.validityStart), eTime = new Date(p.validityEnd);
+    const diffHrs = (eTime - sTime) / (1000 * 60 * 60);
+    if (diffHrs < 12) return toast('Validity must be at least 12 hours', 'error');
+    
+    showLoading(); 
+    try {
+        const r = await api('submitPTW', { ...p, workers: JSON.stringify(workers), checklist: JSON.stringify(checklist), gps: gpsData, signature: signatureData, submittedBy: currentUser.username, company: currentUser.company });
+        hideLoading(); 
+        if (r.success) { 
+            toast('PTW Submitted: ' + r.id, 'success'); 
+            navigate('dashboard'); 
+        } else {
+            toast(r.error || 'Submission failed', 'error');
+        }
+    } catch (err) {
+        hideLoading();
+        toast('Network Error: ' + err.toString(), 'error');
+    }
 }
 
 // ============ VIEW & ACTIONS ============
@@ -527,35 +1394,148 @@ async function loadPTWView(id) {
         hideLoading();
         if (!r.success) return toast(r.error, 'error');
         
-        const p = r.ptw; 
-        let apps = []; try { apps = JSON.parse(p.Approvals || '[]'); } catch (e) { }
-        let workers = []; try { workers = JSON.parse(p.Workers || '[]'); } catch (e) { }
-        let chks = []; try { chks = JSON.parse(p.Checklist || '[]'); } catch (e) { }
+        const p = r.ptw || {}; 
+        let apps = []; try { apps = typeof p.approvals === 'string' ? JSON.parse(p.approvals || '[]') : (p.approvals || []); } catch (e) { }
+        let workers = []; try { workers = typeof p.workers === 'string' ? JSON.parse(p.workers || '[]') : (p.workers || []); } catch (e) { }
+        let chks = []; try { chks = typeof p.checklist === 'string' ? JSON.parse(p.checklist || '[]') : (p.checklist || []); } catch (e) { }
         
-        const role = (currentUser.Role || currentUser.role || '').toUpperCase(); 
-        const uname = (currentUser.Username || currentUser.username || '').toLowerCase();
+        const role = (currentUser.role || '').toString().toUpperCase().trim(); 
+        const uname = (currentUser.username || '').toString().toLowerCase().trim();
+        const status = (p.status || '').toString().toUpperCase().trim();
         
-        let actions = `<button class="btn btn-sm btn-outline" onclick="printPTW('${p.ID}')">🖨️ PDF</button>`;
+        let actions = `<button class="btn btn-sm btn-outline" onclick="printPTW('${p.id}')">🖨️ PDF</button>`;
         
-        // Allow assigned PIC OR Admin to approve
-        const canApprove = (p.PIC && p.PIC.toLowerCase() === uname) || role === 'ADMIN';
+        const isSupervisor = role === 'SUPERVISOR';
+        const isPIC = role === 'PIC';
+        const isEHS = role === 'EHS';
+        const isPM = role === 'PM';
+        const isAdmin = role === 'ADMIN';
 
-        if (p.Status === 'PENDING_PIC' && canApprove) {
-            actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
-        } else if (p.Status === 'PENDING_EHS' && (role === 'EHS' || role === 'ADMIN')) {
-            actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
-        } else if (p.Status === 'PENDING_PM' && (role === 'PM' || role === 'ADMIN')) {
-            actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.ID}')">Approve</button><button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.ID}')">Reject</button>`;
-        } else if (p.Status === 'ACTIVE' && (role === 'PM' || role === 'ADMIN')) {
-            actions += `<button class="btn btn-sm btn-danger" onclick="ptwPrompt('revokePTW','${p.ID}')">Revoke</button><button class="btn btn-sm btn-outline" onclick="ptwAct('closePTW','${p.ID}')">Close</button>`;
+        // Strict Assignment Logic: If someone is assigned, only they can approve.
+        let canApprove = false;
+        const submittedBy = (p.submittedby || '').toString().toLowerCase().trim();
+        
+        if (isAdmin) canApprove = true;
+        else {
+            if (status === 'PENDING_PIC' && !isSupervisor) {
+                const assigned = (p.pic || '').toString().toLowerCase().trim();
+                if (assigned) canApprove = (assigned === uname);
+                else canApprove = isPIC;
+            } else if (status === 'PENDING_EHS' && !isSupervisor) {
+                const assigned = (p.ehs || '').toString().toLowerCase().trim();
+                if (assigned) canApprove = (assigned === uname);
+                else canApprove = isEHS;
+            } else if (status === 'PENDING_PM' && !isSupervisor) {
+                const assigned = (p.pm || '').toString().toLowerCase().trim();
+                if (assigned) canApprove = (assigned === uname);
+                else canApprove = isPM;
+            } else if (status === 'ACTIVE') {
+                // Supervisors can close permits they submitted once they are ACTIVE
+                if (isSupervisor && submittedBy === uname) canApprove = true;
+                // PMs and Admins can always close ACTIVE permits
+                else if (isPM || isAdmin) canApprove = true;
+            }
+        }
+
+        if (canApprove) {
+            if (status === 'PENDING_PIC' || status === 'PENDING_EHS' || status === 'PENDING_PM') {
+                actions += `<button class="btn btn-sm btn-success" onclick="ptwAct('approvePTW','${p.id}')">Approve</button>`;
+                actions += `<button class="btn btn-sm btn-danger" onclick="ptwPrompt('rejectPTW','${p.id}')">Reject</button>`;
+            } else if (status === 'ACTIVE') {
+                if (isAdmin) {
+                    actions += `<button class="btn btn-sm btn-danger" onclick="ptwPrompt('revokePTW','${p.id}')">Revoke</button>`;
+                    actions += `<button class="btn btn-sm btn-outline" onclick="ptwAct('closePTW','${p.id}')">Close</button>`;
+                } else if (isPM) {
+                    actions += `<button class="btn btn-sm btn-danger" onclick="ptwPrompt('revokePTW','${p.id}')">Revoke</button>`;
+                } else if (isSupervisor && submittedBy === uname) {
+                    actions += `<button class="btn btn-sm btn-outline" onclick="ptwAct('closePTW','${p.id}')">Close</button>`;
+                }
+            }
+        }
+        
+        // Admin Force Close Override (Always show if not closed)
+        if (isAdmin && status !== 'CLOSED' && status !== 'REJECTED' && !canApprove) {
+            actions += `<button class="btn btn-sm btn-outline" style="border-color:var(--danger);color:var(--danger)" onclick="ptwAct('closePTW','${p.id}')">Force Close</button>`;
+        }
+
+        // Ensure the Supervisor submission step is always shown first
+        let fullTrail = [...apps];
+        const hasSubmission = fullTrail.some(a => a.action.toUpperCase() === 'SUBMITTED');
+        if (!hasSubmission && p.submittedby) {
+            fullTrail.unshift({
+                role: 'Supervisor',
+                action: 'Submitted',
+                by: p.submittedby,
+                at: formatDate(p.submittedat) + ' (Legacy)',
+                signature: p.signatureurl || p.signature || '',
+                gps: p.gps || ''
+            });
         }
 
         document.getElementById('ptwViewContent').innerHTML = `
-            <div class="form-card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h2>${p.ID}</h2><span class="badge badge-${statusClass(p.Status)}">${p.Status}</span></div><div style="display:flex;gap:8px">${actions}</div></div></div>
-            <div class="form-card"><h3>Details</h3><div class="hazard-stripe"></div><div class="detail-grid"><div class="detail-field"><label>Project</label><p>${p.Project}</p></div><div class="detail-field"><label>Type</label><p>${p.Type}</p></div><div class="detail-field"><label>Location</label><p>${p.Location}</p></div><div class="detail-field"><label>PIC</label><p>${p.PIC}</p></div></div><p style="margin-top:10px"><b>Desc:</b> ${p.WorkDescription}</p></div>
-            <div class="form-card"><h3>Workers</h3>${workers.map(w => `<p>${w.name} (${w.designation})</p>`).join('')}</div>
-            <div class="form-card"><h3>Checklist</h3>${chks.map(c => `<p>${c.item}: <b>${c.answer}</b></p>`).join('')}</div>
-            <div class="form-card"><h3>Trail</h3><div class="approval-trail">${apps.map(a => `<div class="trail-step"><div class="trail-dot done">✓</div><div class="trail-info"><b>${a.role}: ${a.action}</b><br><small>${a.by} @ ${a.at}</small></div></div>`).join('')}</div></div>
+            <div class="form-card">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+                    <div>
+                        <h2 style="color:var(--navy)">${p.id || 'PTW'}</h2>
+                        <span class="badge badge-${statusClass(p.status)}">${p.status || 'UNKNOWN'}</span>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">${actions}</div>
+                </div>
+            </div>
+            <div class="form-card">
+                <h3>Details</h3>
+                <div class="hazard-stripe"></div>
+                <div class="detail-grid">
+                    <div class="detail-field"><label>Project</label><p>${p.project || '-'}</p></div>
+                    <div class="detail-field"><label>Type</label><p>${p.type || '-'}</p></div>
+                    <div class="detail-field"><label>Location</label><p>${p.location || '-'}</p></div>
+                </div>
+                <div style="margin-top:16px;padding-top:16px;border-top:1px solid #eee">
+                    <label style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase">Work Description</label>
+                    <p style="margin-top:4px">${p.workdescription || 'No description'}</p>
+                </div>
+                <div style="margin-top:12px">
+                    <label style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase">Equipment</label>
+                    <p style="margin-top:4px">${p.equipment || '-'}</p>
+                </div>
+            </div>
+            <div class="form-card">
+                <h3>Workers (${workers.length})</h3>
+                <div class="ptw-list" style="margin-top:8px">
+                    ${workers.length ? workers.map(w => `<div style="padding:8px;background:var(--bg);border-radius:6px;font-size:14px"><b>${w.name}</b> - ${w.designation}</div>`).join('') : '<p style="color:var(--text-muted)">No workers listed</p>'}
+                </div>
+            </div>
+            <div class="form-card">
+                <h3>Checklist Items</h3>
+                <div class="ptw-list" style="margin-top:8px">
+                    ${chks.length ? chks.map(c => `
+                        <div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #f3f4f6;font-size:14px">
+                            <span>${c.item}</span>
+                            <span style="font-weight:700;color:${c.answer === 'No' ? 'var(--danger)' : 'var(--navy)'}">${c.answer}</span>
+                        </div>
+                    `).join('') : '<p style="color:var(--text-muted)">No checklist data</p>'}
+                </div>
+            </div>
+            <div class="form-card">
+                <h3>Approval Trail</h3>
+                <div class="approval-trail" style="margin-top:12px">
+                    ${fullTrail.length ? fullTrail.map(a => `
+                        <div class="trail-step">
+                            <div class="trail-dot done ${a.action.toUpperCase() === 'REJECTED' || a.action.toUpperCase() === 'REVOKED' ? 'rejected' : ''}">✓</div>
+                            <div class="trail-info">
+                                <div class="trail-title">${a.role}: ${a.action}</div>
+                                <div class="trail-meta">By ${a.by} @ ${a.at}</div>
+                                ${a.reason ? `<div style="color:var(--danger);font-size:12px;margin-top:4px">Reason: ${a.reason}</div>` : ''}
+                                ${a.signature ? `<img src="${a.signature}" style="max-height:60px;margin-top:8px;border:1px solid #eee;border-radius:4px;background:#fff">` : ''}
+                                ${a.gps ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px">📍 ${a.gps}</div>` : ''}
+                            </div>
+                        </div>
+                    `).join('') : '<p style="color:var(--text-muted);text-align:center;padding:20px">No approvals recorded yet</p>'}
+                </div>
+            </div>
+            <div style="text-align:center;font-size:11px;color:var(--text-muted);padding:20px">
+                📍 Location Verification: ${p.gps || 'N/A'}
+            </div>
         `;
     } catch (err) {
         hideLoading();
@@ -563,107 +1543,329 @@ async function loadPTWView(id) {
         console.error(err);
     }
 }
-async function ptwAct(action, id) { if (!confirm('Confirm?')) return; showLoading(); const r = await api(action, { id, approvedBy: (currentUser.Username || currentUser.username), closedBy: (currentUser.Username || currentUser.username) }); hideLoading(); if (r.success) loadDashboard().then(() => navigate('dashboard')); else toast(r.error, 'error'); }
-async function ptwPrompt(action, id) { const reason = prompt('Reason:'); if (!reason) return; showLoading(); const r = await api(action, { id, rejectedBy: (currentUser.Username || currentUser.username), revokedBy: (currentUser.Username || currentUser.username), role: (currentUser.Role || currentUser.role), reason }); hideLoading(); if (r.success) loadDashboard().then(() => navigate('dashboard')); else toast(r.error, 'error'); }
+async function ptwAct(action, id) {
+    signatureData = null; // IMPORTANT: Clear previous signature from memory
+    if (action === 'approvePTW' || action === 'closePTW') {
+        if (!allUsers.length) {
+            showLoading(); const ur = await api('getUsers'); hideLoading();
+            if (ur.success) allUsers = ur.users;
+        }
+        const p = allPTWs.find(pt => pt.id === id);
+        let assignHtml = '';
+        if (action === 'approvePTW') {
+            if (p.status === 'PENDING_PIC') {
+                assignHtml = `<div class="form-group"><label>Assign EHS Officer</label><select id="assignTo" class="form-control"><option value="">Select EHS...</option>${allUsers.filter(u => u.role === 'EHS' && u.active !== 'NO').map(u => `<option value="${u.username}">${u.name}</option>`).join('')}</select></div>`;
+            } else if (p.status === 'PENDING_EHS') {
+                assignHtml = `<div class="form-group"><label>Assign Project Manager (PM)</label><select id="assignTo" class="form-control"><option value="">Select PM...</option>${allUsers.filter(u => u.role === 'PM' && u.active !== 'NO').map(u => `<option value="${u.username}">${u.name}</option>`).join('')}</select></div>`;
+            }
+        }
+        
+        let savedHtml = '';
+        const userSig = (currentUser && currentUser.signature) ? currentUser.signature : '';
+        if (userSig) {
+            savedHtml = `
+                <div style="margin-bottom:12px;padding:10px;border:1px dashed var(--accent);border-radius:8px;background:#fdfcf0;text-align:center">
+                    <img src="${userSig}" style="max-height:60px;display:block;margin:0 auto;cursor:pointer" onclick="useSavedSigAction('${id}','${action}')">
+                    <button class="btn btn-yellow btn-xs" style="margin-top:5px;width:100%" onclick="useSavedSigAction('${id}','${action}')">Use Saved Signature</button>
+                </div>
+            `;
+        }
+
+        document.getElementById('modalContent').innerHTML = `
+            <h3>${action === 'approvePTW' ? '✅ Approve Permit' : '🔒 Close Permit'}</h3>
+            ${assignHtml}
+            ${savedHtml}
+            <div id="sigArea">
+                <p style="font-size:12px;color:var(--text-muted);margin-bottom:5px">Draw signature below:</p>
+                <div id="gpsStatus" class="gps-status gps-loading" style="margin-bottom:15px">📍 Capturing GPS...</div>
+                <canvas id="sigCanvas" width="400" height="200" style="border:1px solid #ccc;width:100%;background:#fff"></canvas>
+                <div style="margin-top:12px;display:flex;align-items:center;gap:10px">
+                    <input type="checkbox" id="saveSigCheckAction" style="width:18px;height:18px;cursor:pointer" ${currentUser && currentUser.signature ? '' : 'checked'}>
+                    <label for="saveSigCheckAction" style="font-size:13px;cursor:pointer;font-weight:500;color:var(--text)">Save as my default signature</label>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:15px">
+                    <button class="btn btn-outline btn-sm" onclick="clearSig()">Clear</button>
+                    <button class="btn btn-navy btn-sm" style="flex:1" onclick="submitFinalAction('${id}','${action}')">Confirm & ${action === 'approvePTW' ? 'Approve' : 'Close'}</button>
+                </div>
+            </div>
+        `;
+        document.getElementById('modal').classList.add('show');
+        initSig(); refreshGPS();
+    } else {
+        if (!confirm('Confirm?')) return;
+        showLoading(); 
+        const r = await api(action, { id, approvedBy: currentUser.username, closedBy: currentUser.username });
+        hideLoading(); 
+        if (r.success) {
+            toast(r.message || 'Action successful', 'success');
+            navigate('dashboard');
+            loadDashboard(); // Reload in background
+        } else {
+            toast(r.error, 'error');
+        }
+    }
+}
+async function useSavedSigAction(id, action) {
+    signatureData = currentUser.signature;
+    submitFinalAction(id, action);
+}
+
+async function submitFinalAction(id, action) {
+    const canvas = document.getElementById('sigCanvas');
+    
+    // If signatureData is not already set by useSavedSigAction, get it from canvas
+    if (!signatureData && canvas) {
+        signatureData = canvas.toDataURL('image/png');
+        
+        // Blank canvas check
+        const blank = document.createElement('canvas');
+        blank.width = canvas.width; blank.height = canvas.height;
+        if (signatureData === blank.toDataURL()) return toast('Please provide a signature', 'error');
+    }
+
+    const assigned = document.getElementById('assignTo')?.value;
+    const p = allPTWs.find(pt => pt.id === id);
+    
+    if (action === 'approvePTW') {
+        if ((p.status === 'PENDING_PIC' || p.status === 'PENDING_EHS') && !assigned) {
+            return toast('Please assign the next person', 'error');
+        }
+    }
+
+    if (document.getElementById('saveSigCheckAction')?.checked) {
+        api('savesignature', { username: currentUser.username, signature: signatureData }).then(r => {
+            if (r.success) {
+                currentUser.signature = signatureData;
+                toast('Signature saved to profile!');
+            }
+        });
+    }
+
+    showLoading();
+    
+    const payload = { 
+        id, 
+        approvedBy: currentUser.username, 
+        closedBy: currentUser.username,
+        signature: signatureData, 
+        gps: gpsData,
+        ehs: p.status === 'PENDING_PIC' ? assigned : undefined,
+        pm: p.status === 'PENDING_EHS' ? assigned : undefined
+    };
+
+    const r = await api(action, payload);
+    hideLoading();
+    
+    if (r.success) { 
+        closeModal(); 
+        toast(action === 'closePTW' ? 'Permit Closed Successfully' : 'PTW Approved Successfully', 'success');
+        navigate('dashboard');
+        loadDashboard(); 
+    } else {
+        toast(r.error, 'error');
+    }
+}
+
+function useSavedSigAction(id, action) {
+    if (currentUser && currentUser.signature) {
+        signatureData = currentUser.signature;
+        submitFinalAction(id, action);
+    } else {
+        toast('No saved signature found', 'error');
+    }
+}
+async function ptwPrompt(action, id) { 
+    const reason = prompt('Reason:'); 
+    if (!reason) return; 
+    showLoading(); 
+    const r = await api(action, { id, rejectedBy: currentUser.username, revokedBy: currentUser.username, role: currentUser.role, reason }); 
+    hideLoading(); 
+    if (r.success) {
+        toast('Action completed', 'success');
+        navigate('dashboard');
+        loadDashboard(); // Reload in background
+    } else {
+        toast(r.error, 'error');
+    }
+}
 
 // ============ PDF ============
 async function printPTW(id) {
-    showLoading(); const r = await api('getPTWDetail', { id }); hideLoading();
-    if (!r.success) return toast(r.error, 'error');
-    const p = r.ptw; 
-    let apps = []; try { apps = JSON.parse(p.Approvals || '[]'); } catch (e) { }
-    let workers = []; try { workers = JSON.parse(p.Workers || '[]'); } catch (e) { }
-    let chks = []; try { chks = JSON.parse(p.Checklist || '[]'); } catch (e) { }
-
-    const w = window.open('', '_blank');
-    w.document.write(`
-    <html><head><title>${p.ID}</title>
-    <style>
-        body{font-family: Arial, sans-serif; padding: 40px; color: #333; line-height: 1.6;}
-        .header{text-align: center; border-bottom: 3px solid #1E3A5F; padding-bottom: 10px; margin-bottom: 20px;}
-        .header h1{margin: 0; color: #1E3A5F; font-size: 28px;}
-        .header p{margin: 5px 0; font-weight: bold; color: #666;}
-        .section-title{background: #f4f4f4; padding: 8px 12px; font-weight: bold; border-left: 5px solid #1E3A5F; margin: 20px 0 10px; text-transform: uppercase; font-size: 14px;}
-        table{width: 100%; border-collapse: collapse; margin-bottom: 15px;}
-        th, td{border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 13px;}
-        th{background: #fafafa; font-weight: bold; width: 30%;}
-        .chk-table td{width: 50%;}
-        .signature-grid{display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px;}
-        .sig-box{border: 1px solid #ddd; padding: 15px; text-align: center; border-radius: 8px;}
-        .sig-img{max-height: 80px; margin-bottom: 10px;}
-        .footer{margin-top: 40px; font-size: 11px; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 10px;}
-    </style>
-    </head><body>
-        <div class="header">
-            <h1>PERMIT TO WORK</h1>
-            <p>${p.Company || 'BOSH CONSTRUCTION'}</p>
-        </div>
-        
-        <table style="margin-bottom: 0;">
-            <tr><th>Permit ID</th><td><b>${p.ID}</b></td><th>Current Status</th><td>${p.Status}</td></tr>
-            <tr><th>Project</th><td>${p.Project}</td><th>Permit Type</th><td>${p.Type}</td></tr>
-            <tr><th>Validity Start</th><td>${p.ValidityStart}</td><th>Validity End</th><td>${p.ValidityEnd}</td></tr>
-        </table>
-
-        <div class="section-title">Work Details</div>
-        <table>
-            <tr><th>Location / Area</th><td>${p.Location}</td></tr>
-            <tr><th>Contact Number</th><td>${p.ContactNumber}</td></tr>
-            <tr><th>Supervisor (PIC)</th><td>${p.PIC}</td></tr>
-            <tr><th>Work Description</th><td>${p.WorkDescription}</td></tr>
-            <tr><th>Equipment Used</th><td>${p.Equipment}</td></tr>
-        </table>
-
-        <div class="section-title">Checklist Compliance</div>
-        <table class="chk-table">
-            ${chks.map(c => `<tr><td>${c.item}</td><td><b>${c.answer}</b></td></tr>`).join('')}
-        </table>
-
-        <div class="section-title">Workers Involved</div>
-        <table>
-            <tr><th>Name</th><th>Designation</th></tr>
-            ${workers.map(w => `<tr><td>${w.name}</td><td>${w.designation}</td></tr>`).join('')}
-        </table>
-
-        <div class="section-title">Approval & Authorization</div>
-        <table>
-            <tr><th>Role</th><th>Action</th><th>By</th><th>Date/Time</th></tr>
-            ${apps.length ? apps.map(a => `<tr><td>${a.role}</td><td>${a.action}</td><td>${a.by}</td><td>${a.at}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center">No approvals recorded yet</td></tr>'}
-        </table>
-
-        <div class="signature-grid">
-            <div class="sig-box">
-                <p><b>Applicant Signature</b></p>
-                <img src="${p.SignatureURL}" class="sig-img"><br>
-                <small>${p.SubmittedBy}<br>${p.SubmittedAt}</small>
-            </div>
-            <div class="sig-box">
-                <p><b>GPS Verification</b></p>
-                <div style="font-size: 12px; margin-top: 20px;">
-                    Coordinates: ${p.GPS}<br>
-                    Location verified at submission
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            This is a computer-generated document. No physical signature required where digital authorization is present.
-        </div>
-
-        <scr' + 'ipt>setTimeout(()=>window.print(), 800);</scr' + 'ipt>
-    </body></html>
-    `);
-    w.document.close();
+    showLoading();
+    try {
+        const r = await api('getpdf', { id });
+        hideLoading();
+        if (r.success) {
+            const link = document.createElement('a');
+            link.href = 'data:application/pdf;base64,' + r.base64;
+            link.download = r.filename || (id + '.pdf');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            toast('PDF Downloaded Successfully', 'success');
+        } else {
+            toast(r.error || 'Failed to generate PDF', 'error');
+        }
+    } catch (e) {
+        hideLoading();
+        toast('Error: ' + e.message, 'error');
+    }
 }
 
 // ============ ANALYTICS ============
+let chartProject = null;
 async function loadAnalytics() {
-    showLoading(); const r = await api('getAnalytics'); hideLoading(); if (!r.success) return;
-    const a = r.analytics; const colors = ['#1E3A5F', '#FBBF24', '#10b981', '#ef4444', '#3b82f6'];
-    if (chartType) chartType.destroy(); if (chartStatus) chartStatus.destroy();
-    chartType = new Chart(document.getElementById('chartType'), { type: 'doughnut', data: { labels: Object.keys(a.byType), datasets: [{ data: Object.values(a.byType), backgroundColor: colors }] } });
-    chartStatus = new Chart(document.getElementById('chartStatus'), { type: 'doughnut', data: { labels: Object.keys(a.byStatus), datasets: [{ data: Object.values(a.byStatus), backgroundColor: colors }] } });
+    showLoading(); 
+    const r = await api('getAnalytics'); 
+    const pr = await api('getProjects');
+    hideLoading(); 
+    
+    if (!r.success) return;
+    const allData = r.raw || []; // We'll update the backend to send raw data for better filtering
+    const stats = r.analytics; // Fallback to pre-aggregated
+    
+
+    // Populate Project Dropdown if empty
+
+    const filter = document.getElementById('analyticsProjectFilter');
+    if (filter.options.length === 1 && pr.success) {
+        pr.projects.forEach(p => {
+            const opt = document.createElement('option');
+            // Use code as the value to match the PTW database exactly
+            opt.value = p.code; 
+            opt.textContent = p.code + ' - ' + p.name;
+            filter.appendChild(opt);
+        });
+    }
+
+    const selectedProj = filter.value;
+    let displayData = stats;
+
+    // If a specific project is selected, we need to re-calculate stats from raw data
+    if (selectedProj !== 'ALL' && r.raw) {
+        const filtered = r.raw.filter(p => (p.project || '').toString().toLowerCase() === selectedProj.toLowerCase());
+        displayData = { byType: {}, byStatus: {}, byProject: {} };
+        filtered.forEach(p => {
+            displayData.byType[p.type] = (displayData.byType[p.type] || 0) + 1;
+            displayData.byStatus[p.status] = (displayData.byStatus[p.status] || 0) + 1;
+            displayData.byProject[p.project] = (displayData.byProject[p.project] || 0) + 1;
+        });
+    }
+
+    const colors = ['#1E3A5F', '#FBBF24', '#10b981', '#ef4444', '#3b82f6'];
+    if (chartType) chartType.destroy(); if (chartStatus) chartStatus.destroy(); if (chartProject) chartProject.destroy();
+    
+    chartType = new Chart(document.getElementById('chartType'), { type: 'doughnut', data: { labels: Object.keys(displayData.byType), datasets: [{ data: Object.values(displayData.byType), backgroundColor: colors }] } });
+    chartStatus = new Chart(document.getElementById('chartStatus'), { type: 'doughnut', data: { labels: Object.keys(displayData.byStatus), datasets: [{ data: Object.values(displayData.byStatus), backgroundColor: colors }] } });
+    
+    // Only show Project Bar Chart if "All Projects" is selected
+    const projCanvas = document.getElementById('chartProject');
+    if (selectedProj === 'ALL') {
+        projCanvas.parentElement.style.display = 'block';
+        chartProject = new Chart(projCanvas, { 
+            type: 'bar', 
+            data: { 
+                labels: Object.keys(displayData.byProject), 
+                datasets: [{ label: 'Permits per Project', data: Object.values(displayData.byProject), backgroundColor: '#1E3A5F' }] 
+            },
+            options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+        });
+    } else {
+        projCanvas.parentElement.style.display = 'none';
+    }
+    window.currentAnalyticsData = displayData;
 }
+async function startBulkApprove() {
+    if (!currentUser.signature) return toast('Please save a signature first', 'error');
+    let list = allPTWs.filter(p => isMyTask(p));
+    if (!list.length) return;
+    
+    // Ensure we have users loaded for assignment
+    if (!allUsers.length) {
+        showLoading();
+        const ur = await api('getUsers');
+        hideLoading();
+        if (ur.success) allUsers = ur.users;
+    }
+    
+    const status = (list[0].status || '').toUpperCase().trim();
+    let assignHtml = '';
+    if (status === 'PENDING_PIC') {
+        const ehsList = allUsers.filter(u => (u.role || '').toUpperCase() === 'EHS' && (u.active || '').toUpperCase() !== 'NO');
+        assignHtml = `<div class="form-group"><label>Assign EHS Officer for all</label><select id="bulkAssignTo" class="form-control"><option value="">Select EHS...</option>${ehsList.map(u => `<option value="${u.username}">${u.name}</option>`).join('')}</select></div>`;
+    } else if (status === 'PENDING_EHS') {
+        const pmList = allUsers.filter(u => (u.role || '').toUpperCase() === 'PM' && (u.active || '').toUpperCase() !== 'NO');
+        assignHtml = `<div class="form-group"><label>Assign PM for all</label><select id="bulkAssignTo" class="form-control"><option value="">Select PM...</option>${pmList.map(u => `<option value="${u.username}">${u.name}</option>`).join('')}</select></div>`;
+    }
+
+    document.getElementById('modalContent').innerHTML = `
+        <h3>⚡ Bulk Approve (${list.length})</h3>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:15px">Approve all permits in your "My Tasks" using your saved signature.</p>
+        ${assignHtml}
+        <button class="btn btn-navy btn-block" onclick="executeBulkApprove()">Confirm Bulk Approval</button>
+    `;
+    document.getElementById('modal').classList.add('show');
+}
+
+async function executeBulkApprove() {
+    let list = allPTWs.filter(p => isMyTask(p));
+    const status = (list[0].status || '').toUpperCase().trim();
+    const assigned = document.getElementById('bulkAssignTo')?.value;
+    
+    if ((status === 'PENDING_PIC' || status === 'PENDING_EHS') && !assigned) {
+        return toast('Please select an officer to assign', 'error');
+    }
+
+    closeModal();
+    showLoading();
+    const r = await api('bulkapprove', {
+        ids: list.map(p => p.id),
+        status: status,
+        approvedBy: currentUser.username,
+        role: currentUser.role,
+        signature: currentUser.signature,
+        gps: gpsData,
+        ehs: status === 'PENDING_PIC' ? assigned : undefined,
+        pm: status === 'PENDING_EHS' ? assigned : undefined
+    });
+    hideLoading();
+    
+    if (r.success) {
+        toast(`Bulk Approved ${r.count} permits!`, 'success');
+        loadDashboard();
+    } else {
+        toast(r.error || 'Bulk Approval Failed', 'error');
+    }
+}
+async function downloadAnalyticsReport() {
+    const filter = document.getElementById('analyticsProjectFilter');
+    const project = filter.value === 'ALL' ? 'All Projects' : filter.value;
+    if (!window.currentAnalyticsData) return toast('No data to export', 'error');
+    
+    showLoading();
+    try {
+        const r = await api('getanalyticsreport', { 
+            project: project, 
+            stats: window.currentAnalyticsData 
+        });
+        hideLoading();
+        if (r.success) {
+            const link = document.createElement('a');
+            link.href = 'data:application/pdf;base64,' + r.base64;
+            link.download = r.filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            toast('Report Downloaded Successfully!', 'success');
+        } else {
+            toast(r.error || 'Failed to generate report', 'error');
+        }
+    } catch (e) {
+        hideLoading();
+        toast('Error: ' + e.message, 'error');
+    }
+}
+
 </script>
 </body>
 </html>
